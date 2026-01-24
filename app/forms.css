@@ -1,0 +1,49 @@
+.form-div { 
+  max-width: 800;
+  margin: 3rem auto;
+
+  padding: 20px;
+  border: 1px dashed gray;
+}
+
+.form-row {
+  display: flex;
+  flex-direction: row;
+  gap: 2rem;
+  margin-bottom: 1rem;
+  padding: 5px;
+
+  border: 1px solid white;
+
+}
+
+.form-title {
+  font-size: large;
+  font-weight: 600;
+
+  margin-bottom: 2rem;
+}
+
+.form-row label {
+  font-weight: 500;
+}
+
+.form-row input {
+  border: 1px solid white;
+}
+
+.form-submit {
+  background-color: white;
+  color: black;
+
+  padding: 2px 8px;
+}
+
+.error {
+  color: red;
+  font-size: 0.85rem;
+}
+
+.success {
+  color: green;
+}
