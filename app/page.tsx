@@ -1,6 +1,4 @@
-import "./forms.css";
-
-import { NuevoPsico } from "./NuevoPsico";
+import { NuevoPsico } from "./Forms/NuevoPsico";
 
 export default function Home() {
   return (

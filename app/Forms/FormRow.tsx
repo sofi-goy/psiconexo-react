@@ -4,13 +4,13 @@ import { ChangeEvent } from 'react';
 
 type Props = {
   field: FieldConfig;
-  onChange: (name: string, value: string) => void;
+  onChange: (field: FieldConfig, value: string) => void;
 };
 
 export function FormRow({ field, onChange } : Props) {
      function handleChange(e: ChangeEvent<HTMLInputElement>) {
         console.log("Cambiando " + field.name)
-        onChange(field.name, e.target.value);
+        onChange(field, e.target.value);
       }
 
     return (
