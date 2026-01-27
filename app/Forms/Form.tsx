@@ -1,4 +1,4 @@
-import { FieldConfig } from "@/types/form";
+import { FieldConfig, is_numeric } from "@/types/form";
 import { FormRow } from "./FormRow";
 
 import { useState } from 'react';
@@ -16,10 +16,11 @@ export function Form({ titulo, endpoint, fields }: Props) {
     const [error, setError] = useState<string>('');
 
     function handleChange(field: FieldConfig, rawValue: string) {
+
         var value: string | Number;
-        if (field.type === "number")
+        if (is_numeric(field)) {
             value = Number(rawValue);
-        else
+        } else
             value = rawValue;
 
         setForm(prev => ({ ...prev, [field.name]: value }));

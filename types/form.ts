@@ -1,4 +1,6 @@
-export type FieldType = 'text' | 'email' | 'number' | 'password' | 'tel';
+export type FieldType = 'text' | 'email' | 'number' | 'password' | 'tel' | 'select';
+export type FieldValue = string | number;
+export type FieldValueType = 'string' | 'number';
 
 export type FieldConfig = {
   id: string;
@@ -8,4 +10,10 @@ export type FieldConfig = {
   required?: boolean;
   minLength?: number;
   min?: number;
+  options?: { label: string; value: FieldValue }[];
+  optionsType?: FieldValueType;
 };
+
+export function is_numeric(field: FieldConfig) {
+  return (field.type === "number" || field.optionsType === "number")
+}
