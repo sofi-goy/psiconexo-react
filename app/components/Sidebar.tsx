@@ -1,7 +1,13 @@
+"use client";
+
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import { CalendarDays, Settings, Link as LinkIcon, User, Clock } from 'lucide-react'; 
 import './sidebar.css'; 
 
 export function Sidebar() {
+  const pathname = usePathname();
+
   return (
     <aside className="sidebar">
       <div className="sidebar-header">
@@ -9,26 +15,45 @@ export function Sidebar() {
       </div>
 
       <nav className="sidebar-nav">
-        <Link href="/" className="nav-item active">
-          📅 <span>Mi Agenda</span>
-        </Link>
-        
-        <Link href="/pacientes" className="nav-item">
-          👥 <span>Mis Pacientes</span>
+        <Link 
+          href="/" 
+          className={`nav-item ${pathname === '/' ? 'active' : ''}`}
+        >
+          <CalendarDays size={20} />
+          <span>Mi Agenda</span>
         </Link>
 
-        <Link href="/perfil" className="nav-item">
-          ⚙️ <span>Configuración</span>
+        <Link 
+          href="/horarios" 
+          className={`nav-item ${pathname === '/horarios' ? 'active' : ''}`}
+        >
+          <Clock size={20} />
+          <span>Mis Horarios</span>
+        </Link>
+
+        <Link 
+          href="/configuracion" 
+          className={`nav-item ${pathname === '/configuracion' ? 'active' : ''}`}
+        >
+          <Settings size={20} />
+          <span>Configuración</span>
         </Link>
       </nav>
 
       <div className="sidebar-footer">
-        <button className="share-btn">
-          🔗 Copiar Link Púbico
+        <button className="share-btn-gold">
+          <LinkIcon size={16} />
+          <span>Copiar Link Público</span>
         </button>
+
         <div className="user-info">
-          <div className="avatar">D</div>
-          <span>Dr. House</span>
+          <div className="avatar">
+            <User size={18} color="#121212" />
+          </div>
+          <div className="user-details">
+            <span className="user-name">Dr. House</span>
+            <span className="user-role">Psicólogo Clínico</span>
+          </div>
         </div>
       </div>
     </aside>
