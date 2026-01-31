@@ -56,7 +56,10 @@ export default function Home() {
         onClose={() => setModalOpen(null)}
         title="Agendar Nueva Sesión"
       >
-        <NuevoTurno />
+        <NuevoTurno
+          psychologistId={loggedPsychologistId}
+          onSuccess={() => setModalOpen(null)}
+        />
       </Modal>
 
       <Modal 

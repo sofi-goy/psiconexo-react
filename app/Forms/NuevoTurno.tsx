@@ -5,11 +5,15 @@ import { FieldConfig } from '@/types/form';
 import { useState, useEffect } from 'react';
 import './forms.css';
 
-export function NuevoTurno() {
+type Props = {
+  psychologistId: number;
+  onSuccess?: () => void;
+};
 
-  const [psicoOptions, setPsicoOptions] = useState<{label: string, value: number}[]>([]);
+export function NuevoTurno({ psychologistId, onSuccess }: Props) {
+
   const [patientOptions, setPatientOptions] = useState<{label: string, value: number | string}[]>([
-    { label: "seleccionar psicólogx", value: "" }
+    { label: "Cargando pacientes...", value: "" }
   ]);
   
   const [isRecurring, setIsRecurring] = useState(false);
@@ -27,34 +31,26 @@ export function NuevoTurno() {
   ];
 
   useEffect(() => {
-    async function loadPsicos() {
+    async function loadPatients() {
       try {
-        const res = await fetch("http://localhost:8080/api/v1/psychologists");
-        if (!res.ok) throw new Error("Error cargando psicólogxs");
+        const res = await fetch(`http://localhost:8080/api/v1/patients?psychologist_id=${psychologistId}`);
+        if (!res.ok) throw new Error("Error cargando pacientes");
         const data = await res.json();
-        
-        setPsicoOptions([
-            { label: "Seleccionar unx", value: 0 },
+
+        setPatientOptions([
+            { label: "Seleccione paciente", value: "" },
             ...data.map((p: any) => ({ label: p.name, value: p.id }))
         ]);
       } catch(e) {
           console.error(e);
+          setPatientOptions([{ label: "Error al cargar pacientes", value: "" }]);
       }
     }
-    loadPsicos();
-  }, []);
+    loadPatients();
+  }, [psychologistId]);
 
   useEffect(() => {
     const currentFields: FieldConfig[] = [
-      { 
-        type: "select", 
-        name: "psychologist_id", 
-        id: "turno-psico-id", 
-        label: "Psicólogo",
-        options: psicoOptions,
-        optionsType: "number", 
-        required: true 
-      },
       { 
         type: "select", 
         name: "patient_id", 
@@ -87,34 +83,9 @@ export function NuevoTurno() {
     ];
 
     setFields(currentFields);
-  }, [isRecurring, psicoOptions, patientOptions]);
+  }, [isRecurring, patientOptions]);
 
-  function handleFormChange(name: string, value: any) {
-    if (name === 'psychologist_id') {
-      const selectedPsicoId = value;
-      if (selectedPsicoId) {
-        loadPatients(selectedPsicoId);
-      } else {
-        setPatientOptions([{ label: "seleccione psicólogx", value: "" }]);
-      }
-    }
-  }
-
-  async function loadPatients(psicoId: number) {
-    try {
-      const res = await fetch(`http://localhost:8080/api/v1/patients?psychologist_id=${psicoId}`);
-      if (!res.ok) throw new Error("Error cargando pacientes");
-      const data = await res.json();
-
-      setPatientOptions([
-          { label: "Seleccione paciente", value: "" },
-          ...data.map((p: any) => ({ label: p.name, value: p.id }))
-      ]);
-    } catch(e) {
-        console.error(e);
-    }
-  }
-
+  
   const endpoint = isRecurring 
     ? 'http://localhost:8080/api/v1/recurring-slots' 
     : 'http://localhost:8080/api/v1/appointments';
@@ -126,7 +97,9 @@ export function NuevoTurno() {
         titulo={isRecurring ? "Asignar Horario Fijo" : "Agendar Turno"} 
         endpoint={endpoint} 
         fields={fields}
-        onFieldChange={handleFormChange} 
+
+        extraValues={{ psychologist_id: psychologistId }}
+        onSuccess={onSuccess}
       >
         <div style={{ 
             marginBottom: '15px', 
@@ -135,6 +108,7 @@ export function NuevoTurno() {
             display: 'flex', 
             gap: '10px', 
             alignItems: 'center',
+            justifyContent: 'center',
             fontSize: '0.9rem',
             borderBottom: '1px solid #333',
             paddingBottom: '15px'
