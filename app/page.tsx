@@ -4,11 +4,18 @@ import { Sidebar } from "./components/Sidebar";
 import { Modal } from "./components/Modal";
 import { NuevoTurno } from "./Forms/NuevoTurno";
 import { NuevoPaciente } from "./Forms/NuevoPaciente";
+import { WeeklyCalendar } from "./components/WeeklyCalendar";
 import './dashboard.css';
 
 export default function Home() {
   const [modalOpen, setModalOpen] = useState<'turno' | 'paciente' | null>(null);
-  const loggedPsychologistId = 1; 
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
+  const loggedPsychologistId = 1;
+
+  const handleSuccessTurno = () => {
+      setModalOpen(null);
+      setRefreshTrigger(prev => prev + 1);
+  };
 
   return (
     <div style={{ display: 'flex', height: '100vh', backgroundColor: '#121212' }}>
@@ -37,10 +44,11 @@ export default function Home() {
           </div>
         </header>
 
-        <div className="calendar-placeholder">
-          <p style={{ color: '#444' }}>
-            Aquí dibujaremos la grilla de horarios del Dr. House
-          </p>
+        <div style={{ flex: 1, border: '1px solid #333', borderRadius: '12px', overflow: 'hidden', backgroundColor: '#0f0f0f' }}>
+          <WeeklyCalendar 
+            key={refreshTrigger} // El key fuerza al componente a recargarse si cambia
+            psychologistId={loggedPsychologistId} 
+          />
         </div>
 
       </main>

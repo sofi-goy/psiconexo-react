@@ -1,0 +1,85 @@
+@import 'react-big-calendar/lib/css/react-big-calendar.css';
+
+
+.rbc-calendar {
+  color: #e0e0e0;
+  background-color: #0a0a0a;
+  font-family: inherit;
+  height: 100%;
+}
+
+.rbc-header {
+  border-bottom: 1px solid #333 !important;
+  padding: 10px 0;
+  font-weight: 600;
+  color: #fff;
+  text-transform: capitalize;
+}
+
+.rbc-header + .rbc-header {
+  border-left: 1px solid #333 !important;
+}
+
+.rbc-time-view {
+  border: 1px solid #333 !important;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.rbc-day-slot .rbc-time-slot {
+  border-top: 1px solid #222 !important;
+}
+
+.rbc-timeslot-group {
+  border-bottom: 1px solid #222 !important;
+}
+
+.rbc-time-content {
+  border-top: 1px solid #333 !important;
+}
+
+.rbc-time-gutter .rbc-timeslot-group {
+  border-bottom: 1px solid #222 !important;
+}
+
+.rbc-day-slot {
+  border-left: 1px solid #333 !important;
+}
+
+.rbc-time-gutter {
+  background-color: #0f0f0f;
+  border-right: 1px solid #333 !important;
+}
+
+.rbc-label {
+  color: #888;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.rbc-today {
+  background-color: rgba(255, 255, 255, 0.03) !important;
+}
+
+.event-appointment {
+  background-color: #2563eb !important;
+  border: 1px solid #3b82f6 !important;
+  border-radius: 6px !important;
+  color: white !important;
+  font-size: 0.8rem;
+  padding: 2px 5px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+}
+
+.event-available {
+  background-color: #1a1a1a !important;
+  border: 1px dashed #444 !important;
+  border-radius: 4px !important;
+  color: #666 !important;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.rbc-allday-cell {
+  display: none !important;
+}
