@@ -1,15 +1,16 @@
 import { FieldConfig, is_numeric } from "@/types/form";
 import { FormRow } from "./FormRow";
-
-import { useState } from 'react';
+import { useState, ReactNode } from 'react';
 
 type Props = {
     titulo: string;
     endpoint: string;
     fields: FieldConfig[];
-    onFieldChange?: (name: string, value:any) => void;};
+    onFieldChange?: (name: string, value:any) => void;
+    children?: ReactNode;
+};
 
-export function Form({ titulo, endpoint, fields, onFieldChange }: Props) {
+export function Form({ titulo, endpoint, fields, onFieldChange, children }: Props) {
     const [form, setForm] = useState({});
 
     const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
@@ -26,7 +27,7 @@ export function Form({ titulo, endpoint, fields, onFieldChange }: Props) {
         setForm(prev => ({ ...prev, [field.name]: value }));
 
         if (onFieldChange) {
-            onFieldChange(field.name, value);
+            onFieldChange(field.name, value)
         }
     }
 
@@ -57,6 +58,8 @@ export function Form({ titulo, endpoint, fields, onFieldChange }: Props) {
     return (
         <form onSubmit={handleSubmit} className='form-div'>
             <h1 className='form-title'>{titulo}</h1>
+
+            {children}
 
             {fields.map(field =>
                 <FormRow

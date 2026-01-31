@@ -1,4 +1,4 @@
-export type FieldType = 'text' | 'email' | 'number' | 'password' | 'tel' | 'select';
+export type FieldType = 'text' | 'email' | 'number' | 'password' | 'tel' | 'select' | "date" | "time";
 export type FieldValue = string | number;
 export type FieldValueType = 'string' | 'number';
 
