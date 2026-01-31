@@ -35,10 +35,13 @@ export function NuevoPaciente() {
           field.name === 'psychologist_id'
             ? {
                 ...field,
-                options: psicos.map((p: any) => ({
-                  label: p.name,
-                  value: p.id,
-                })),
+                options: [
+                  { label: "Seleccionar unx", value: "" },
+                ...psicos.map((p: any) => ({
+                    label: p.name,
+                    value: p.id,
+                }))
+                ]
               }
             : field
         )

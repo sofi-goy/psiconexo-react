@@ -10,7 +10,7 @@ export function NuevoPsico() {
     {type: "text", name: "name", id: "psico-name", label: "Nombre", required: true},
     {type: "tel", name: "phone", id: "psico-phone", label: "Teléfono", required: false},
     {type: "email", name: "email", id: "psico-email", label: "Mail", required: true},
-    {type: "number", name: "cancellation_window_hours", id: "psico-hours", label: "Anticipación para cancelar", required: true}
+    {type: "number", name: "cancellation_window_hours", id: "psico-hours", label: "Anticipación para cancelar (en horas)", required: true}
   ];
 
   return (
