@@ -1,5 +1,4 @@
 import { FieldConfig } from '@/types/form';
-
 import { ChangeEvent } from 'react';
 
 type Props = {
@@ -10,18 +9,11 @@ type Props = {
 export function FormRow({ field, onChange }: Props) {
   function renderInput() {
     switch (field.type) {
-      case 'number':
-      case 'text':
-      case 'email':
-      case 'password':
-      case 'tel':
-        return (<input id={field.id} type={field.type} name={field.name} onChange={handleChange} />)
       case 'select':
         if (field.options) {
           const select_options = field.options.map(
             (option) => <option key={option.label} value={option.value}>{option.label}</option>
           );
-
           return (
             <select id={field.id} name={field.name} onChange={handleChange}>
               {select_options}
@@ -29,6 +21,16 @@ export function FormRow({ field, onChange }: Props) {
           )
         }
         return;
+
+      case 'number':
+      case 'text':
+      case 'email':
+      case 'password':
+      case 'tel':
+      case 'date':
+      case 'time':
+      default:
+        return (<input id={field.id} type={field.type} name={field.name} onChange={handleChange} />)
     }
   }
 

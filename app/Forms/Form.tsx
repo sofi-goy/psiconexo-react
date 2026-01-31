@@ -8,16 +8,17 @@ type Props = {
     fields: FieldConfig[];
     onFieldChange?: (name: string, value:any) => void;
     children?: ReactNode;
+    extraValues?: Record<string, any>;
+    onSuccess?: () => void;            
 };
 
-export function Form({ titulo, endpoint, fields, onFieldChange, children }: Props) {
+export function Form({ titulo, endpoint, fields, onFieldChange, children, extraValues, onSuccess }: Props) {
     const [form, setForm] = useState({});
 
     const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
     const [error, setError] = useState<string>('');
 
     function handleChange(field: FieldConfig, rawValue: string) {
-
         var value: string | Number;
         if (is_numeric(field)) {
             value = Number(rawValue);
@@ -34,14 +35,17 @@ export function Form({ titulo, endpoint, fields, onFieldChange, children }: Prop
     async function handleSubmit(e: React.FormEvent) {
         e.preventDefault();
         setStatus('loading');
+        setError('');
 
         try {
+            const payload = { ...form, ...extraValues };
+
             const res = await fetch(endpoint, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify(form),
+                body: JSON.stringify(payload),
             });
 
             if (!res.ok) {
@@ -51,10 +55,21 @@ export function Form({ titulo, endpoint, fields, onFieldChange, children }: Prop
             }
 
             setStatus('success');
-        } catch {
+
+            if (onSuccess) {
+                setTimeout(() => {
+                    setStatus('idle');
+                    setForm({});
+                    onSuccess();
+                }, 1000);
+            }
+
+        } catch (err: any) {
             setStatus('error');
+            if (!error) setError(err.message || "Error desconocido");
         }
     }
+
     return (
         <form onSubmit={handleSubmit} className='form-div'>
             <h1 className='form-title'>{titulo}</h1>
@@ -69,10 +84,10 @@ export function Form({ titulo, endpoint, fields, onFieldChange, children }: Prop
                 />)}
 
             <button type="submit" disabled={status === 'loading'} className='form-submit'>
-                Enviar
+                {status === 'loading' ? 'Guardando...' : 'Enviar'}
             </button>
 
-            {status === 'success' && <p className='success'>Guardado.</p>}
+            {status === 'success' && <p className='success'>Guardado correctamente.</p>}
             {status === 'error' && <p className='error'>Error al guardar: {error}</p>}
         </form>
     )

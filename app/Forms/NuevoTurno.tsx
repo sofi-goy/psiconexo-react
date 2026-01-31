@@ -9,13 +9,14 @@ export function NuevoTurno() {
 
   const [psicoOptions, setPsicoOptions] = useState<{label: string, value: number}[]>([]);
   const [patientOptions, setPatientOptions] = useState<{label: string, value: number | string}[]>([
-    { label: "Primero seleccione un Psicólogx", value: "" }
+    { label: "seleccionar psicólogx", value: "" }
   ]);
   
   const [isRecurring, setIsRecurring] = useState(false);
   const [fields, setFields] = useState<FieldConfig[]>([]);
 
   const daysOfWeekOptions = [
+    { label: "Seleccionar día...", value: 0 },
     { label: "Lunes", value: 1 },
     { label: "Martes", value: 2 },
     { label: "Miércoles", value: 3 },
@@ -81,8 +82,8 @@ export function NuevoTurno() {
             label: "Fecha (YYYY-MM-DD)", 
             required: true 
           },
-      { type: "time", name: "start_time", id: "turno-start-time", label: "Hora (HH:MM)", required: true },
-      { type: "number", name: "duration", id: "turno-duration", label: "Duración (min)", required: true }
+      { type: "time", name: "start_time", id: "turno-start-time", label: "Hora (HH:MM) ", required: true },
+      { type: "number", name: "duration", id: "turno-duration", label: "Duración (min) ", required: true }
     ];
 
     setFields(currentFields);
@@ -94,7 +95,7 @@ export function NuevoTurno() {
       if (selectedPsicoId) {
         loadPatients(selectedPsicoId);
       } else {
-        setPatientOptions([{ label: "Primero seleccione un Psicólogx", value: "" }]);
+        setPatientOptions([{ label: "seleccione psicólogx", value: "" }]);
       }
     }
   }
