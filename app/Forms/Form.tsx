@@ -7,9 +7,9 @@ type Props = {
     titulo: string;
     endpoint: string;
     fields: FieldConfig[];
-};
+    onFieldChange?: (name: string, value:any) => void;};
 
-export function Form({ titulo, endpoint, fields }: Props) {
+export function Form({ titulo, endpoint, fields, onFieldChange }: Props) {
     const [form, setForm] = useState({});
 
     const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
@@ -24,6 +24,10 @@ export function Form({ titulo, endpoint, fields }: Props) {
             value = rawValue;
 
         setForm(prev => ({ ...prev, [field.name]: value }));
+
+        if (onFieldChange) {
+            onFieldChange(field.name, value);
+        }
     }
 
     async function handleSubmit(e: React.FormEvent) {
