@@ -1,87 +1,91 @@
 @import 'react-big-calendar/lib/css/react-big-calendar.css';
 
-/* ===== BASE CALENDAR STYLES ===== */
+/* ===== CALENDAR - LIGHT THEME ===== */
 .rbc-calendar {
-  color: #e0e0e0;
-  background-color: #0a0a0a;
+  color: var(--color-text-primary);
+  background-color: var(--color-surface);
   font-family: inherit;
   height: 100%;
 }
 
-/* ===== HEADER STYLES ===== */
+/* ===== HEADER ===== */
 .rbc-header {
-  border-bottom: 1px solid #2a2a2a !important;
-  padding: 12px 0;
+  border-bottom: 1px solid var(--color-border) !important;
+  padding: 14px 0;
   font-weight: 600;
-  color: #fff;
+  font-size: 0.85rem;
+  color: var(--color-text-secondary);
   text-transform: capitalize;
-  background-color: #111;
+  background-color: var(--color-surface);
 }
 
 .rbc-header+.rbc-header {
-  border-left: 1px solid #2a2a2a !important;
+  border-left: 1px solid var(--color-border) !important;
 }
 
-/* ===== TIME VIEW CONTAINER ===== */
+/* ===== TIME VIEW ===== */
 .rbc-time-view {
-  border: 1px solid #2a2a2a !important;
-  border-radius: 12px;
-  overflow: hidden;
+  border: none !important;
+  border-radius: 0;
 }
 
-/* ===== TIME SLOTS & GRID ===== */
+/* ===== TIME SLOTS ===== */
 .rbc-day-slot .rbc-time-slot {
-  border-top: 1px solid #1a1a1a !important;
+  border-top: 1px solid var(--color-border-light) !important;
 }
 
 .rbc-timeslot-group {
-  border-bottom: 1px solid #1a1a1a !important;
-  min-height: 50px;
+  border-bottom: 1px solid var(--color-border-light) !important;
+  min-height: 48px;
 }
 
 .rbc-time-content {
-  border-top: 1px solid #2a2a2a !important;
+  border-top: 1px solid var(--color-border) !important;
 }
 
 .rbc-time-gutter .rbc-timeslot-group {
-  border-bottom: 1px solid #1a1a1a !important;
+  border-bottom: 1px solid var(--color-border-light) !important;
 }
 
 .rbc-day-slot {
-  border-left: 1px solid #2a2a2a !important;
+  border-left: 1px solid var(--color-border) !important;
 }
 
-/* ===== TIME GUTTER (LEFT COLUMN) ===== */
+/* ===== TIME GUTTER ===== */
 .rbc-time-gutter {
-  background-color: #0d0d0d;
-  border-right: 1px solid #2a2a2a !important;
+  background-color: var(--color-bg);
+  border-right: 1px solid var(--color-border) !important;
 }
 
 .rbc-label {
-  color: #888;
+  color: var(--color-text-muted);
   font-size: 0.75rem;
   font-weight: 500;
-  padding: 0 8px;
+  padding: 0 10px;
 }
 
-/* ===== TODAY HIGHLIGHT ===== */
+/* ===== TODAY ===== */
 .rbc-today {
-  background-color: rgba(255, 255, 255, 0.02) !important;
+  background-color: var(--color-primary-light) !important;
 }
 
-/* ===== APPOINTMENTS (Minimal Style) ===== */
-.rbc-event,
-.event-appointment {
-  background-color: transparent !important;
+/* ===== APPOINTMENTS ===== */
+.rbc-event {
+  background-color: var(--color-appointment) !important;
   border: none !important;
-  border-left: 3px solid #10b981 !important;
-  border-radius: 0 !important;
-  color: #10b981 !important;
+  border-radius: var(--radius-sm) !important;
+  color: white !important;
   font-size: 0.8rem;
   font-weight: 500;
-  padding: 2px 8px;
-  cursor: default;
-  box-shadow: none !important;
+  padding: 4px 8px;
+  box-shadow: var(--shadow-sm);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.rbc-event:hover {
+  box-shadow: var(--shadow-md);
+  transform: scale(1.02);
 }
 
 .rbc-event-content {
@@ -93,13 +97,40 @@
   white-space: nowrap;
 }
 
-/* Icon before patient name */
-.rbc-event-content::before {
-  content: "■";
-  font-size: 0.6rem;
+/* Pending state for optimistic UI */
+.rbc-event.pending {
+  opacity: 0.7;
+  background-color: var(--color-appointment) !important;
 }
 
-/* ===== HIDE UNUSED ELEMENTS ===== */
+/* Preview state - live preview while editing */
+.rbc-event.preview {
+  background-color: var(--color-primary) !important;
+  opacity: 0.6;
+  border: 2px dashed var(--color-primary-hover) !important;
+  animation: previewPulse 1.5s ease-in-out infinite;
+}
+
+@keyframes previewPulse {
+
+  0%,
+  100% {
+    opacity: 0.5;
+  }
+
+  50% {
+    opacity: 0.8;
+  }
+}
+
+/* ===== SLOT SELECTION (Click to schedule) ===== */
+.rbc-slot-selection {
+  background-color: var(--color-primary-light) !important;
+  border: 2px dashed var(--color-primary) !important;
+  border-radius: var(--radius-sm);
+}
+
+/* ===== HIDE UNUSED ===== */
 .rbc-event-label {
   display: none;
 }
@@ -108,63 +139,60 @@
   display: none !important;
 }
 
-/* ===== TOOLBAR STYLES ===== */
+/* ===== TOOLBAR ===== */
 .rbc-toolbar {
   margin-bottom: 16px;
-  padding: 8px 4px;
+  padding: 12px 16px;
+  background-color: var(--color-bg);
+  border-bottom: 1px solid var(--color-border);
 }
 
 .rbc-toolbar button {
-  background-color: #1a1a1a;
-  border: 1px solid #333;
-  color: #e0e0e0;
-  padding: 8px 16px;
-  border-radius: 8px;
-  font-size: 0.875rem;
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  color: var(--color-text-primary);
+  padding: 8px 14px;
+  border-radius: var(--radius-md);
+  font-size: 0.85rem;
   font-weight: 500;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all var(--transition-fast);
 }
 
 .rbc-toolbar button:hover {
-  background-color: #2a2a2a;
-  border-color: #444;
+  background-color: var(--color-surface-hover);
+  border-color: var(--color-text-muted);
 }
 
 .rbc-toolbar button.rbc-active {
-  background-color: #2563eb;
-  border-color: #3b82f6;
+  background-color: var(--color-primary);
+  border-color: var(--color-primary);
   color: white;
 }
 
 .rbc-toolbar button.rbc-active:hover {
-  background-color: #3b82f6;
+  background-color: var(--color-primary-hover);
 }
 
 .rbc-toolbar-label {
   font-weight: 600;
   font-size: 1rem;
-  color: #fff;
+  color: var(--color-text-primary);
 }
 
-/* ===== CURRENT TIME INDICATOR ===== */
+/* ===== CURRENT TIME ===== */
 .rbc-current-time-indicator {
-  background-color: #ef4444;
+  background-color: var(--color-error);
   height: 2px;
-  box-shadow: 0 0 8px rgba(239, 68, 68, 0.6);
+  box-shadow: 0 0 6px rgba(239, 68, 68, 0.5);
 }
 
-/* ===== REMOVE SELECTION STYLES ===== */
+/* ===== REMOVE FOCUS OUTLINES ===== */
 .rbc-event:focus,
 .rbc-event:active,
 .rbc-event.rbc-selected,
 .rbc-selected {
   outline: none !important;
-  box-shadow: none !important;
-}
-
-.rbc-slot-selection {
-  display: none !important;
 }
 
 /* ===== RESPONSIVE ===== */
@@ -175,6 +203,6 @@
   }
 
   .rbc-toolbar button {
-    padding: 10px 14px;
+    padding: 10px 12px;
   }
 }

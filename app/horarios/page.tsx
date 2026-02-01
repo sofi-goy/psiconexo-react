@@ -29,12 +29,12 @@ const INITIAL_DAYS: DaySchedule[] = [
 export default function HorariosPage() {
   const [schedule, setSchedule] = useState<DaySchedule[]>(INITIAL_DAYS);
   const [loading, setLoading] = useState(true);
-  const psychologistId = 1; // Hardcodeado para MVP
+  const professionalId = 1; // Hardcodeado para MVP
 
   useEffect(() => {
     async function loadSchedule() {
       try {
-        const res = await fetch(`http://localhost:8080/api/v1/schedule?psychologist_id=${psychologistId}`);
+        const res = await fetch(`http://localhost:8080/api/v1/schedule?professional_id=${professionalId}`);
         if (res.ok) {
           const data = await res.json();
           const newSchedule = INITIAL_DAYS.map(day => {
@@ -60,7 +60,7 @@ export default function HorariosPage() {
     const newSchedule = [...schedule];
     const day = newSchedule[dayIndex];
     day.enabled = !day.enabled;
-    
+
     if (day.enabled && day.blocks.length === 0) {
       day.blocks.push({ start_time: "09:00", end_time: "17:00" });
     }
@@ -87,7 +87,7 @@ export default function HorariosPage() {
 
   const handleSave = async () => {
     const flatBlocks = [];
-    
+
     for (const day of schedule) {
       if (day.enabled) {
         for (const block of day.blocks) {
@@ -105,7 +105,7 @@ export default function HorariosPage() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          psychologist_id: psychologistId,
+          professional_id: professionalId,
           blocks: flatBlocks
         })
       });
@@ -121,34 +121,34 @@ export default function HorariosPage() {
     }
   };
 
-  if (loading) return <div style={{padding: 50, color: 'white'}}>Cargando horarios...</div>;
+  if (loading) return <div style={{ padding: 50, color: 'var(--color-text-muted)' }}>Cargando horarios...</div>;
 
   return (
-    <div style={{ display: 'flex', height: '100vh', backgroundColor: '#121212' }}>
+    <div style={{ display: 'flex', height: '100vh', backgroundColor: 'var(--color-bg)' }}>
       <Sidebar />
       <main style={{ flex: 1, padding: '40px', overflowY: 'auto' }}>
-        
-        <header style={{ marginBottom: '40px' }}>
-          <h1 style={{ color: 'white', fontSize: '1.8rem', display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <Clock /> Configuración de Horarios
+
+        <header style={{ marginBottom: '32px' }}>
+          <h1 style={{ color: 'var(--color-text-primary)', fontSize: '1.6rem', display: 'flex', alignItems: 'center', gap: '10px', fontWeight: 700 }}>
+            <Clock size={24} /> Configuración de Horarios
           </h1>
-          <p style={{ color: '#888', marginTop: '5px' }}>
-            Define tus bloques de disponibilidad semanal. Los pacientes solo podrán reservar dentro de estos espacios.
+          <p style={{ color: 'var(--color-text-secondary)', marginTop: '6px' }}>
+            Define tus bloques de disponibilidad semanal
           </p>
         </header>
 
         <div className="schedule-container">
           {schedule.map((day, dIndex) => (
             <div key={day.day_of_week} className={`day-card ${!day.enabled ? 'disabled' : ''}`}>
-              
+
               <div className="day-header">
                 <div className="day-title">
                   <span>{day.label}</span>
                 </div>
                 <label className="toggle-switch">
-                  <input 
-                    type="checkbox" 
-                    checked={day.enabled} 
+                  <input
+                    type="checkbox"
+                    checked={day.enabled}
                     onChange={() => toggleDay(dIndex)}
                   />
                   <span className="slider"></span>
@@ -159,22 +159,22 @@ export default function HorariosPage() {
                 <div className="time-blocks-list">
                   {day.blocks.map((block, bIndex) => (
                     <div key={bIndex} className="time-block-row">
-                      <input 
-                        type="time" 
+                      <input
+                        type="time"
                         className="time-input"
                         value={block.start_time}
                         onChange={(e) => updateTime(dIndex, bIndex, 'start_time', e.target.value)}
                       />
                       <span className="time-separator">hasta</span>
-                      <input 
-                        type="time" 
+                      <input
+                        type="time"
                         className="time-input"
                         value={block.end_time}
                         onChange={(e) => updateTime(dIndex, bIndex, 'end_time', e.target.value)}
                       />
-                      
-                      <button 
-                        className="btn-icon" 
+
+                      <button
+                        className="btn-icon"
                         onClick={() => removeBlock(dIndex, bIndex)}
                         title="Eliminar intervalo"
                       >

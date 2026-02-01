@@ -2,8 +2,8 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { CalendarDays, Settings, Link as LinkIcon, User, Clock } from 'lucide-react'; 
-import './sidebar.css'; 
+import { CalendarDays, Settings, Link as LinkIcon, User, Clock } from 'lucide-react';
+import './sidebar.css';
 
 export function Sidebar() {
   const pathname = usePathname();
@@ -15,24 +15,24 @@ export function Sidebar() {
       </div>
 
       <nav className="sidebar-nav">
-        <Link 
-          href="/" 
+        <Link
+          href="/"
           className={`nav-item ${pathname === '/' ? 'active' : ''}`}
         >
           <CalendarDays size={20} />
           <span>Mi Agenda</span>
         </Link>
 
-        <Link 
-          href="/horarios" 
+        <Link
+          href="/horarios"
           className={`nav-item ${pathname === '/horarios' ? 'active' : ''}`}
         >
           <Clock size={20} />
           <span>Mis Horarios</span>
         </Link>
 
-        <Link 
-          href="/configuracion" 
+        <Link
+          href="/configuracion"
           className={`nav-item ${pathname === '/configuracion' ? 'active' : ''}`}
         >
           <Settings size={20} />
@@ -48,7 +48,7 @@ export function Sidebar() {
 
         <div className="user-info">
           <div className="avatar">
-            <User size={18} color="#121212" />
+            <User size={18} />
           </div>
           <div className="user-details">
             <span className="user-name">Dr. House</span>

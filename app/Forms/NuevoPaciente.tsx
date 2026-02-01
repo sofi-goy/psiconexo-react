@@ -5,12 +5,12 @@ import { FieldConfig } from '@/types/form';
 import './forms.css';
 
 type Props = {
-    psychologistId: number;
+    professionalId: number;
     onSuccess?: () => void;
 };
 
-export function NuevoPaciente({ psychologistId, onSuccess }: Props) {
-    
+export function NuevoPaciente({ professionalId, onSuccess }: Props) {
+
     const fields: FieldConfig[] = [
         { type: "text", name: "name", id: "paciente-name", label: "Nombre Completo", required: true },
         { type: "tel", name: "phone", id: "paciente-phone", label: "Teléfono", required: false },
@@ -18,11 +18,11 @@ export function NuevoPaciente({ psychologistId, onSuccess }: Props) {
     ];
 
     return (
-        <Form 
-            titulo="Registrar Nuevo Paciente" 
-            endpoint='http://localhost:8080/api/v1/patients' 
+        <Form
+            titulo="Registrar Nuevo Paciente"
+            endpoint='http://localhost:8080/api/v1/clients'
             fields={fields}
-            extraValues={{ psychologist_id: psychologistId }}
+            extraValues={{ professional_id: professionalId, active: true }}
             onSuccess={onSuccess}
         />
     );

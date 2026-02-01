@@ -1,80 +1,106 @@
 "use client";
-import { useState } from "react";
+import { useState, useCallback } from "react";
+import { SlotInfo } from "react-big-calendar";
 import { Sidebar } from "./components/Sidebar";
 import { Modal } from "./components/Modal";
-import { NuevoTurno } from "./Forms/NuevoTurno";
+import { SmartScheduleModal } from "./components/SmartScheduleModal";
 import { NuevoPaciente } from "./Forms/NuevoPaciente";
 import { WeeklyCalendar } from "./components/WeeklyCalendar";
+import { Plus } from "lucide-react";
 import './dashboard.css';
 
-export default function Home() {
-  const [modalOpen, setModalOpen] = useState<'turno' | 'paciente' | null>(null);
-  const [refreshTrigger, setRefreshTrigger] = useState(0);
-  const loggedPsychologistId = 1;
+type PreviewAppointment = {
+  id: number;
+  date: string;
+  start_time: string;
+  duration_minutes: number;
+  client_id: number;
+  client_name?: string;
+  isPreview: boolean;
+};
 
-  const handleSuccessTurno = () => {
-      setModalOpen(null);
-      setRefreshTrigger(prev => prev + 1);
-  };
+export default function Home() {
+  const [modalPatient, setModalPatient] = useState(false);
+  const [scheduleSlot, setScheduleSlot] = useState<SlotInfo | null>(null);
+  const [previewAppointment, setPreviewAppointment] = useState<PreviewAppointment | null>(null);
+  const [refreshKey, setRefreshKey] = useState(0);
+
+  const loggedProfessionalId = 1;
+
+  const handleSlotSelect = useCallback((slotInfo: SlotInfo) => {
+    setScheduleSlot(slotInfo);
+  }, []);
+
+  const handlePreviewChange = useCallback((preview: PreviewAppointment | null) => {
+    setPreviewAppointment(preview);
+  }, []);
+
+  const handleSchedule = useCallback(() => {
+    // Clear preview and refresh calendar
+    setPreviewAppointment(null);
+    setRefreshKey(k => k + 1);
+  }, []);
+
+  const handleCloseSchedule = useCallback(() => {
+    setPreviewAppointment(null);
+    setScheduleSlot(null);
+  }, []);
 
   return (
-    <div style={{ display: 'flex', height: '100vh', backgroundColor: '#121212' }}>
+    <div style={{ display: 'flex', height: '100vh', backgroundColor: 'var(--color-bg)' }}>
       <Sidebar />
-      <main style={{ flex: 1, padding: '30px', overflowY: 'auto' }}>
-        
+
+      <main style={{ flex: 1, padding: '24px', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+        {/* Header */}
         <header className="dashboard-header">
           <div>
             <h1 className="header-title">Agenda Semanal</h1>
-            <p className="header-subtitle">Gestiona tus sesiones y horarios</p>
+            <p className="header-subtitle">Haz clic en un horario vacío para agendar</p>
           </div>
-          
+
           <div className="header-actions">
-            <button 
-              onClick={() => setModalOpen('paciente')}
+            <button
+              onClick={() => setModalPatient(true)}
               className="btn-secondary"
             >
-              + Nuevo Paciente
-            </button>
-            <button 
-              onClick={() => setModalOpen('turno')}
-              className="btn-primary"
-            >
-              + Agendar Turno
+              <Plus size={18} />
+              Nuevo Paciente
             </button>
           </div>
         </header>
 
-        <div style={{ flex: 1, border: '1px solid #333', borderRadius: '12px', overflow: 'hidden', backgroundColor: '#0f0f0f' }}>
-          <WeeklyCalendar 
-            key={refreshTrigger} // El key fuerza al componente a recargarse si cambia
-            psychologistId={loggedPsychologistId} 
+        {/* Calendar */}
+        <div className="calendar-container" style={{ flex: 1 }}>
+          <WeeklyCalendar
+            key={refreshKey}
+            professionalId={loggedProfessionalId}
+            onSlotSelect={handleSlotSelect}
+            previewAppointment={previewAppointment}
           />
         </div>
-
       </main>
 
-      <Modal 
-        isOpen={modalOpen === 'turno'} 
-        onClose={() => setModalOpen(null)}
-        title="Agendar Nueva Sesión"
-      >
-        <NuevoTurno
-          psychologistId={loggedPsychologistId}
-          onSuccess={() => setModalOpen(null)}
-        />
-      </Modal>
+      {/* Smart Schedule Modal */}
+      <SmartScheduleModal
+        isOpen={!!scheduleSlot}
+        onClose={handleCloseSchedule}
+        slotInfo={scheduleSlot}
+        professionalId={loggedProfessionalId}
+        onSchedule={handleSchedule}
+        onPreviewChange={handlePreviewChange}
+      />
 
-      <Modal 
-        isOpen={modalOpen === 'paciente'} 
-        onClose={() => setModalOpen(null)}
+      {/* Patient Modal */}
+      <Modal
+        isOpen={modalPatient}
+        onClose={() => setModalPatient(false)}
         title="Registrar Nuevo Paciente"
       >
-        <NuevoPaciente 
-            psychologistId={loggedPsychologistId} 
-            onSuccess={() => setModalOpen(null)}
+        <NuevoPaciente
+          professionalId={loggedProfessionalId}
+          onSuccess={() => setModalPatient(false)}
         />
       </Modal>
-
     </div>
   );
 }

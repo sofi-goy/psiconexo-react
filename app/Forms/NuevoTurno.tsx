@@ -6,13 +6,13 @@ import { useState, useEffect } from 'react';
 import './forms.css';
 
 type Props = {
-  psychologistId: number;
+  professionalId: number;
   onSuccess?: () => void;
 };
 
-export function NuevoTurno({ psychologistId, onSuccess }: Props) {
+export function NuevoTurno({ professionalId, onSuccess }: Props) {
 
-  const [patientOptions, setPatientOptions] = useState<{ label: string, value: number | string }[]>([
+  const [clientOptions, setClientOptions] = useState<{ label: string, value: number | string }[]>([
     { label: "Cargando pacientes...", value: "" }
   ]);
 
@@ -31,23 +31,23 @@ export function NuevoTurno({ psychologistId, onSuccess }: Props) {
   ];
 
   useEffect(() => {
-    async function loadPatients() {
+    async function loadClients() {
       try {
-        const res = await fetch(`http://localhost:8080/api/v1/patients?psychologist_id=${psychologistId}`);
+        const res = await fetch(`http://localhost:8080/api/v1/clients?professional_id=${professionalId}`);
         if (!res.ok) throw new Error("Error cargando pacientes");
         const data = await res.json();
 
-        setPatientOptions([
+        setClientOptions([
           { label: "Seleccione paciente", value: "" },
-          ...data.map((p: any) => ({ label: p.name, value: p.id }))
+          ...data.map((c: any) => ({ label: c.name, value: c.id }))
         ]);
       } catch (e) {
         console.error(e);
-        setPatientOptions([{ label: "Error al cargar pacientes", value: "" }]);
+        setClientOptions([{ label: "Error al cargar pacientes", value: "" }]);
       }
     }
-    loadPatients();
-  }, [psychologistId]);
+    loadClients();
+  }, [professionalId]);
 
   useEffect(() => {
     if (appointmentType === "") {
@@ -57,19 +57,21 @@ export function NuevoTurno({ psychologistId, onSuccess }: Props) {
 
     const isRecurring = appointmentType === 'recurring';
 
-    const currentFields: FieldConfig[] = [
+    const baseFields: FieldConfig[] = [
       {
         type: "select",
-        name: "patient_id",
-        id: "turno-paciente-id",
+        name: "client_id",
+        id: "turno-cliente-id",
         label: "Paciente",
-        options: patientOptions,
+        options: clientOptions,
         optionsType: "number",
         required: true
       },
+    ];
 
-      isRecurring
-        ? {
+    if (isRecurring) {
+      baseFields.push(
+        {
           type: "select",
           name: "day_of_week",
           id: "turno-dia",
@@ -77,20 +79,23 @@ export function NuevoTurno({ psychologistId, onSuccess }: Props) {
           options: daysOfWeekOptions,
           optionsType: "number",
           required: true
-        }
-        : {
-          type: "date",
-          name: "date",
-          id: "turno-date",
-          label: "Fecha (YYYY-MM-DD)",
-          required: true
         },
-      { type: "time", name: "start_time", id: "turno-start-time", label: "Hora (HH:MM) ", required: true },
-      { type: "number", name: "duration", id: "turno-duration", label: "Duración (min) ", required: true }
-    ];
+        { type: "date", name: "start_date", id: "turno-start-date", label: "Desde (fecha inicio)", required: false },
+      );
+    } else {
+      baseFields.push(
+        { type: "date", name: "date", id: "turno-date", label: "Fecha", required: true }
+      );
+    }
 
-    setFields(currentFields);
-  }, [appointmentType, patientOptions]);
+    baseFields.push(
+      { type: "time", name: "start_time", id: "turno-start-time", label: "Hora", required: true },
+      { type: "number", name: "duration", id: "turno-duration", label: "Duración (min)", required: true },
+      { type: "number", name: "price", id: "turno-price", label: "Precio", required: false }
+    );
+
+    setFields(baseFields);
+  }, [appointmentType, clientOptions]);
 
 
   const endpoint = appointmentType === 'recurring'
@@ -127,7 +132,7 @@ export function NuevoTurno({ psychologistId, onSuccess }: Props) {
           titulo=""
           endpoint={endpoint}
           fields={fields}
-          extraValues={{ psychologist_id: psychologistId }}
+          extraValues={{ professional_id: professionalId }}
           onSuccess={onSuccess}
         />
       )}
