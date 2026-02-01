@@ -18,6 +18,8 @@ const localizer = dateFnsLocalizer({
 });
 
 type ScheduleBlock = { day_of_week: number; start_time: string; end_time: string; };
+
+// Ahora appointments incluye TODOS: puntuales y los generados de reglas recurrentes
 type Appointment = {
   id: number;
   date: string;
@@ -25,16 +27,7 @@ type Appointment = {
   duration_minutes: number;
   patient_id: number;
   patient_name?: string;
-};
-
-// Horarios fijos (recurrentes cada semana)
-type RecurringSlot = {
-  id: number;
-  day_of_week: number;
-  start_time: string;
-  duration_minutes: number;
-  patient_id: number;
-  patient_name?: string;
+  recurring_rule_id?: number | null; // Si tiene valor, es de un turno fijo
 };
 
 type CalendarEvent = {
@@ -51,7 +44,6 @@ export function WeeklyCalendar({ psychologistId }: { psychologistId: number }) {
 
   const [schedule, setSchedule] = useState<ScheduleBlock[]>([]);
   const [appointments, setAppointments] = useState<Appointment[]>([]);
-  const [recurringSlots, setRecurringSlots] = useState<RecurringSlot[]>([]);
 
   useEffect(() => {
     setIsMounted(true);
@@ -65,13 +57,9 @@ export function WeeklyCalendar({ psychologistId }: { psychologistId: number }) {
         const resSched = await fetch(`http://localhost:8080/api/v1/schedule?psychologist_id=${psychologistId}`);
         if (resSched.ok) setSchedule(await resSched.json() || []);
 
-        // Turnos puntuales (one-time appointments)
+        // TODOS los turnos (puntuales + materializados de reglas fijas)
         const resAppts = await fetch(`http://localhost:8080/api/v1/appointments?psychologist_id=${psychologistId}&start_date=${startStr}&end_date=${endStr}`);
         if (resAppts.ok) setAppointments(await resAppts.json() || []);
-
-        // Horarios fijos (recurring weekly slots)
-        const resRecurring = await fetch(`http://localhost:8080/api/v1/recurring-slots?psychologist_id=${psychologistId}`);
-        if (resRecurring.ok) setRecurringSlots(await resRecurring.json() || []);
 
       } catch (e) {
         console.error(e);
@@ -106,7 +94,7 @@ export function WeeklyCalendar({ psychologistId }: { psychologistId: number }) {
       });
     }
 
-    // B) TURNOS PUNTUALES (Azul)
+    // B) TURNOS (puntuales y recurrentes) - todos están en appointments ahora
     appointments.forEach(appt => {
       try {
         const cleanDate = appt.date.includes('T') ? appt.date.split('T')[0] : appt.date;
@@ -129,33 +117,8 @@ export function WeeklyCalendar({ psychologistId }: { psychologistId: number }) {
       }
     });
 
-    // C) HORARIOS FIJOS (Recurrentes - también Azul)
-    // Proyectamos cada recurring slot al día correspondiente de esta semana
-    for (let i = 0; i < 7; i++) {
-      const currentDayDate = addDays(currentStartOfWeek, i);
-      let jsDay = getDay(currentDayDate);
-      let dbDay = jsDay === 0 ? 7 : jsDay; // Convertir domingo de 0 a 7
-
-      const daySlots = recurringSlots.filter(s => s.day_of_week === dbDay);
-
-      daySlots.forEach(slot => {
-        const [h, min] = slot.start_time.split(':').map(Number);
-        if (isNaN(h) || isNaN(min)) return;
-
-        const startObj = setMinutes(setHours(currentDayDate, h), min);
-        const endObj = new Date(startObj.getTime() + slot.duration_minutes * 60000);
-
-        fgEvents.push({
-          title: slot.patient_name || `Paciente #${slot.patient_id}`,
-          start: startObj,
-          end: endObj,
-          type: 'appointment'
-        });
-      });
-    }
-
     return { backgroundEvents: bgEvents, myEvents: fgEvents };
-  }, [schedule, appointments, recurringSlots, date]);
+  }, [schedule, appointments, date]);
 
   const eventStyleGetter = (event: CalendarEvent) => {
     if (event.type === 'appointment') {
