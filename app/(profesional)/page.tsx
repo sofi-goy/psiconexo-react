@@ -1,11 +1,10 @@
 "use client";
 import { useState, useCallback } from "react";
 import { SlotInfo } from "react-big-calendar";
-import { Sidebar } from "./components/Sidebar";
-import { Modal } from "./components/Modal";
-import { SmartScheduleModal } from "./components/SmartScheduleModal";
-import { NuevoPaciente } from "./Forms/NuevoPaciente";
-import { WeeklyCalendar } from "./components/WeeklyCalendar";
+import { Modal } from "@/components/ui/Modal";
+import { SmartScheduleModal } from "@/components/calendar/SmartScheduleModal";
+import { NuevoPaciente } from "@/components/forms/NuevoPaciente";
+import { WeeklyCalendar } from "@/components/calendar/WeeklyCalendar";
 import { Plus } from "lucide-react";
 import './dashboard.css';
 
@@ -19,7 +18,7 @@ type PreviewAppointment = {
   isPreview: boolean;
 };
 
-export default function Home() {
+export default function ProfesionalDashboard() {
   const [modalPatient, setModalPatient] = useState(false);
   const [scheduleSlot, setScheduleSlot] = useState<SlotInfo | null>(null);
   const [previewAppointment, setPreviewAppointment] = useState<PreviewAppointment | null>(null);
@@ -36,7 +35,6 @@ export default function Home() {
   }, []);
 
   const handleSchedule = useCallback(() => {
-    // Clear preview and refresh calendar
     setPreviewAppointment(null);
     setRefreshKey(k => k + 1);
   }, []);
@@ -47,38 +45,34 @@ export default function Home() {
   }, []);
 
   return (
-    <div style={{ display: 'flex', height: '100vh', backgroundColor: 'var(--color-bg)' }}>
-      <Sidebar />
-
-      <main style={{ flex: 1, padding: '24px', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
-        {/* Header */}
-        <header className="dashboard-header">
-          <div>
-            <h1 className="header-title">Agenda Semanal</h1>
-            <p className="header-subtitle">Haz clic en un horario vacío para agendar</p>
-          </div>
-
-          <div className="header-actions">
-            <button
-              onClick={() => setModalPatient(true)}
-              className="btn-secondary"
-            >
-              <Plus size={18} />
-              Nuevo Paciente
-            </button>
-          </div>
-        </header>
-
-        {/* Calendar */}
-        <div className="calendar-container" style={{ flex: 1 }}>
-          <WeeklyCalendar
-            key={refreshKey}
-            professionalId={loggedProfessionalId}
-            onSlotSelect={handleSlotSelect}
-            previewAppointment={previewAppointment}
-          />
+    <main style={{ flex: 1, padding: '24px', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+      {/* Header */}
+      <header className="dashboard-header">
+        <div>
+          <h1 className="header-title">Agenda Semanal</h1>
+          <p className="header-subtitle">Haz clic en un horario vacío para agendar</p>
         </div>
-      </main>
+
+        <div className="header-actions">
+          <button
+            onClick={() => setModalPatient(true)}
+            className="btn-secondary"
+          >
+            <Plus size={18} />
+            Nuevo Paciente
+          </button>
+        </div>
+      </header>
+
+      {/* Calendar */}
+      <div className="calendar-container" style={{ flex: 1 }}>
+        <WeeklyCalendar
+          key={refreshKey}
+          professionalId={loggedProfessionalId}
+          onSlotSelect={handleSlotSelect}
+          previewAppointment={previewAppointment}
+        />
+      </div>
 
       {/* Smart Schedule Modal */}
       <SmartScheduleModal
@@ -101,6 +95,6 @@ export default function Home() {
           onSuccess={() => setModalPatient(false)}
         />
       </Modal>
-    </div>
+    </main>
   );
 }

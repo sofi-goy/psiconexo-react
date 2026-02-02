@@ -20,15 +20,6 @@ export function SchedulingRules({ settings, onChange }: Props) {
         onChange({ ...settings, [key]: value });
     };
 
-    const setMode = (mode: 'tetris' | 'flexible') => {
-        // Update both mode and increment atomically
-        onChange({
-            ...settings,
-            mode,
-            time_increment_minutes: mode === 'tetris' ? 60 : 15
-        });
-    };
-
     return (
         <div className="agenda-card">
             <div className="agenda-card-header">

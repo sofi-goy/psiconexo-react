@@ -24,8 +24,8 @@ export function Sidebar() {
         </Link>
 
         <Link
-          href="/horarios"
-          className={`nav-item ${pathname === '/horarios' ? 'active' : ''}`}
+          href="/reglas-agenda"
+          className={`nav-item ${pathname === '/reglas-agenda' ? 'active' : ''}`}
         >
           <Sliders size={20} />
           <span>Reglas de Agenda</span>

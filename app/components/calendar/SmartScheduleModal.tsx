@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect, useRef } from 'react';
 import Select from 'react-select';
-import { User, Mail, Phone, Clock, DollarSign, RotateCcw, X, Calendar, Edit3 } from 'lucide-react';
+import { User, Mail, Phone, Clock, DollarSign, RotateCcw, X, Calendar } from 'lucide-react';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 import './smart-schedule-modal.css';
@@ -88,22 +88,27 @@ export function SmartScheduleModal({ isOpen, onClose, slotInfo, professionalId, 
     // Initialize form when modal opens with slot info
     useEffect(() => {
         if (isOpen && slotInfo) {
+            // Calculate duration from drag selection
+            const draggedMinutes = Math.round((slotInfo.end.getTime() - slotInfo.start.getTime()) / 60000);
+            // Use dragged duration if meaningful (>= 15 min), otherwise default to 60
+            const initialDuration = draggedMinutes >= 15 ? draggedMinutes : 60;
+
             setSelectedDate(format(slotInfo.start, 'yyyy-MM-dd'));
             setSelectedTime(format(slotInfo.start, 'HH:mm'));
             setSelectedClient(null);
             setNewClientName('');
             setNewClientEmail('');
             setNewClientPhone('');
-            setDuration(60);
+            setDuration(initialDuration);
             setShowCustomDuration(false);
-            setCustomDuration(60);
+            setCustomDuration(initialDuration);
             setPrice(0);
             setIsRecurring(false);
             setInputValue('');
             setPosition({ x: 0, y: 0 });
 
             // Trigger initial preview
-            updatePreview(format(slotInfo.start, 'yyyy-MM-dd'), format(slotInfo.start, 'HH:mm'), 60);
+            updatePreview(format(slotInfo.start, 'yyyy-MM-dd'), format(slotInfo.start, 'HH:mm'), initialDuration);
         }
     }, [isOpen, slotInfo]);
 
@@ -276,6 +281,11 @@ export function SmartScheduleModal({ isOpen, onClose, slotInfo, professionalId, 
             });
 
             if (!res.ok) throw new Error('Error al agendar');
+
+            // For recurring rules, add small delay to let backend generate instances
+            if (isRecurring) {
+                await new Promise(resolve => setTimeout(resolve, 500));
+            }
 
             const confirmedAppointment = {
                 id: Date.now(),

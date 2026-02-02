@@ -1,12 +1,11 @@
 "use client";
 import { useState, useEffect } from "react";
-import { Sidebar } from "../components/Sidebar";
 import { WeekPainter } from "./components/WeekPainter";
 import { SchedulingRules } from "./components/SchedulingRules";
 import { WellnessLimits } from "./components/WellnessLimits";
 import { PatientPreview } from "./components/PatientPreview";
 import { Save, Loader2 } from "lucide-react";
-import './agenda-rules.css';
+import './styles.css';
 
 type TimeBlock = {
   day_of_week: number;
@@ -135,72 +134,63 @@ export default function AgendaRulesPage() {
 
   if (loading) {
     return (
-      <div className="agenda-rules-page">
-        <Sidebar />
-        <main className="agenda-rules-main" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <Loader2 size={32} className="animate-spin" style={{ color: 'var(--color-primary)' }} />
-        </main>
-      </div>
+      <main className="agenda-rules-main" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <Loader2 size={32} className="animate-spin" style={{ color: 'var(--color-primary)' }} />
+      </main>
     );
   }
 
   return (
-    <div className="agenda-rules-page">
-      <Sidebar />
+    <main className="agenda-rules-main">
+      <header className="agenda-header">
+        <h1>Reglas de Agenda</h1>
+        <p>Configura cómo los pacientes pueden agendar contigo</p>
+      </header>
 
-      <main className="agenda-rules-main">
-        <header className="agenda-header">
-          <h1>
-            Reglas de Agenda
-          </h1>
-          <p>Configura cómo los pacientes pueden agendar contigo</p>
-        </header>
-
-        <div className="agenda-content">
-          {/* Left Column: Controls */}
-          <div className="agenda-controls">
-            <WeekPainter
-              blocks={blocks}
-              onChange={handleBlocksChange}
-            />
-
-            <SchedulingRules
-              settings={settings}
-              onChange={handleSettingsChange}
-            />
-
-            <WellnessLimits
-              maxDaily={settings.max_daily_appointments}
-              onChange={handleMaxDailyChange}
-            />
-          </div>
-
-          {/* Right Column: Preview */}
-          <PatientPreview
+      <div className="agenda-content">
+        {/* Left Column: Controls */}
+        <div className="agenda-controls">
+          <WeekPainter
             blocks={blocks}
+            onChange={handleBlocksChange}
+          />
+
+          <SchedulingRules
             settings={settings}
+            onChange={handleSettingsChange}
+          />
+
+          <WellnessLimits
+            maxDaily={settings.max_daily_appointments}
+            onChange={handleMaxDailyChange}
           />
         </div>
 
-        {/* Save Button */}
-        <button
-          className="save-button"
-          onClick={handleSave}
-          disabled={saving || !hasChanges}
-        >
-          {saving ? (
-            <>
-              <Loader2 size={18} className="animate-spin" />
-              Guardando...
-            </>
-          ) : (
-            <>
-              <Save size={18} />
-              Guardar Cambios
-            </>
-          )}
-        </button>
-      </main>
-    </div>
+        {/* Right Column: Preview */}
+        <PatientPreview
+          blocks={blocks}
+          settings={settings}
+        />
+      </div>
+
+      {/* Save Button */}
+      <button
+        className="save-button"
+        onClick={handleSave}
+        disabled={saving || !hasChanges}
+      >
+        {saving ? (
+          <>
+            <Loader2 size={18} className="animate-spin" />
+            Guardando...
+          </>
+        ) : (
+          <>
+            <Save size={18} />
+            Guardar Cambios
+          </>
+        )}
+      </button>
+    </main>
   );
 }
