@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { CalendarDays, Settings, Link as LinkIcon, User, Sliders } from 'lucide-react';
+import { CalendarDays, Settings, Link as LinkIcon, User, Sliders, Video } from 'lucide-react';
 import './sidebar.css';
 
 export function Sidebar() {
@@ -21,6 +21,14 @@ export function Sidebar() {
         >
           <CalendarDays size={20} />
           <span>Mi Agenda</span>
+        </Link>
+
+        <Link
+          href="/consultorio"
+          className={`nav-item ${pathname === '/consultorio' ? 'active' : ''}`}
+        >
+          <Video size={20} />
+          <span>Consultorio Digital</span>
         </Link>
 
         <Link
