@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { CalendarDays, Settings, Link as LinkIcon, User, Clock } from 'lucide-react';
+import { CalendarDays, Settings, Link as LinkIcon, User, Sliders } from 'lucide-react';
 import './sidebar.css';
 
 export function Sidebar() {
@@ -27,8 +27,8 @@ export function Sidebar() {
           href="/horarios"
           className={`nav-item ${pathname === '/horarios' ? 'active' : ''}`}
         >
-          <Clock size={20} />
-          <span>Mis Horarios</span>
+          <Sliders size={20} />
+          <span>Reglas de Agenda</span>
         </Link>
 
         <Link

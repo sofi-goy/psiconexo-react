@@ -139,8 +139,9 @@ export function WeeklyCalendar({ professionalId, onSlotSelect, previewAppointmen
         onView={setView}
         date={date}
         onNavigate={setDate}
-        min={new Date(0, 0, 0, 8, 0, 0)}
-        max={new Date(0, 0, 0, 21, 0, 0)}
+        min={new Date(0, 0, 0, 0, 0, 0)}
+        max={new Date(0, 0, 0, 23, 59, 59)}
+        scrollToTime={new Date()}
         selectable
         onSelectSlot={handleSelectSlot}
         eventPropGetter={eventPropGetter}

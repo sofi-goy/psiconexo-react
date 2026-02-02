@@ -41,6 +41,7 @@
 
 .rbc-time-content {
   border-top: 1px solid var(--color-border) !important;
+  background-color: var(--color-surface);
 }
 
 .rbc-time-gutter .rbc-timeslot-group {
@@ -49,6 +50,11 @@
 
 .rbc-day-slot {
   border-left: 1px solid var(--color-border) !important;
+  background-color: var(--color-surface);
+}
+
+.rbc-day-slot .rbc-events-container {
+  background-color: transparent;
 }
 
 /* ===== TIME GUTTER ===== */

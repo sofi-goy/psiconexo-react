@@ -1,201 +1,205 @@
 "use client";
 import { useState, useEffect } from "react";
 import { Sidebar } from "../components/Sidebar";
-import { Plus, Trash2, Save, Clock } from "lucide-react";
-import './horarios.css';
+import { WeekPainter } from "./components/WeekPainter";
+import { SchedulingRules } from "./components/SchedulingRules";
+import { WellnessLimits } from "./components/WellnessLimits";
+import { PatientPreview } from "./components/PatientPreview";
+import { Save, Loader2 } from "lucide-react";
+import './agenda-rules.css';
 
 type TimeBlock = {
+  day_of_week: number;
   start_time: string;
   end_time: string;
 };
 
-type DaySchedule = {
-  day_of_week: number;
-  label: string;
-  enabled: boolean;
-  blocks: TimeBlock[];
+type SettingsData = {
+  mode: 'tetris' | 'flexible';
+  default_duration_minutes: number;
+  buffer_minutes: number;
+  time_increment_minutes: number;
+  min_booking_notice_hours: number;
+  max_daily_appointments: number | null;
 };
 
-const INITIAL_DAYS: DaySchedule[] = [
-  { day_of_week: 1, label: "Lunes", enabled: false, blocks: [] },
-  { day_of_week: 2, label: "Martes", enabled: false, blocks: [] },
-  { day_of_week: 3, label: "Miércoles", enabled: false, blocks: [] },
-  { day_of_week: 4, label: "Jueves", enabled: false, blocks: [] },
-  { day_of_week: 5, label: "Viernes", enabled: false, blocks: [] },
-  { day_of_week: 6, label: "Sábado", enabled: false, blocks: [] },
-  { day_of_week: 7, label: "Domingo", enabled: false, blocks: [] },
-];
+const INITIAL_SETTINGS: SettingsData = {
+  mode: 'tetris',
+  default_duration_minutes: 50,
+  buffer_minutes: 10,
+  time_increment_minutes: 60,
+  min_booking_notice_hours: 24,
+  max_daily_appointments: 6,
+};
 
-export default function HorariosPage() {
-  const [schedule, setSchedule] = useState<DaySchedule[]>(INITIAL_DAYS);
+export default function AgendaRulesPage() {
+  const [blocks, setBlocks] = useState<TimeBlock[]>([]);
+  const [settings, setSettings] = useState<SettingsData>(INITIAL_SETTINGS);
   const [loading, setLoading] = useState(true);
-  const professionalId = 1; // Hardcodeado para MVP
+  const [saving, setSaving] = useState(false);
+  const [hasChanges, setHasChanges] = useState(false);
 
+  const professionalId = 1; // MVP hardcoded
+
+  // Load existing data
   useEffect(() => {
-    async function loadSchedule() {
+    async function loadData() {
       try {
-        const res = await fetch(`http://localhost:8080/api/v1/schedule?professional_id=${professionalId}`);
-        if (res.ok) {
-          const data = await res.json();
-          const newSchedule = INITIAL_DAYS.map(day => {
-            const dayBlocks = data.filter((b: any) => b.day_of_week === day.day_of_week);
-            return {
-              ...day,
-              enabled: dayBlocks.length > 0,
-              blocks: dayBlocks.length > 0 ? dayBlocks : [{ start_time: "09:00", end_time: "17:00" }]
-            };
-          });
-          setSchedule(newSchedule);
+        // Load schedule blocks
+        const scheduleRes = await fetch(`http://localhost:8080/api/v1/schedule?professional_id=${professionalId}`);
+        if (scheduleRes.ok) {
+          const data = await scheduleRes.json();
+          if (data && Array.isArray(data)) {
+            setBlocks(data.map((d: any) => ({
+              day_of_week: d.day_of_week,
+              start_time: d.start_time,
+              end_time: d.end_time,
+            })));
+          }
+        }
+
+        // Load settings
+        const settingsRes = await fetch(`http://localhost:8080/api/v1/settings?professional_id=${professionalId}`);
+        if (settingsRes.ok) {
+          const data = await settingsRes.json();
+          if (data) {
+            setSettings({
+              mode: data.time_increment_minutes >= 60 ? 'tetris' : 'flexible',
+              default_duration_minutes: data.default_duration_minutes || 50,
+              buffer_minutes: data.buffer_minutes || 0,
+              time_increment_minutes: data.time_increment_minutes || 60,
+              min_booking_notice_hours: data.min_booking_notice_hours || 24,
+              max_daily_appointments: data.max_daily_appointments || null,
+            });
+          }
         }
       } catch (error) {
-        console.error("Error cargando horarios:", error);
+        console.error('Error loading data:', error);
       } finally {
         setLoading(false);
       }
     }
-    loadSchedule();
+    loadData();
   }, []);
 
-  const toggleDay = (dayIndex: number) => {
-    const newSchedule = [...schedule];
-    const day = newSchedule[dayIndex];
-    day.enabled = !day.enabled;
-
-    if (day.enabled && day.blocks.length === 0) {
-      day.blocks.push({ start_time: "09:00", end_time: "17:00" });
-    }
-    setSchedule(newSchedule);
+  const handleBlocksChange = (newBlocks: TimeBlock[]) => {
+    setBlocks(newBlocks);
+    setHasChanges(true);
   };
 
-  const addBlock = (dayIndex: number) => {
-    const newSchedule = [...schedule];
-    newSchedule[dayIndex].blocks.push({ start_time: "14:00", end_time: "18:00" });
-    setSchedule(newSchedule);
+  const handleSettingsChange = (newSettings: SettingsData) => {
+    setSettings(newSettings);
+    setHasChanges(true);
   };
 
-  const removeBlock = (dayIndex: number, blockIndex: number) => {
-    const newSchedule = [...schedule];
-    newSchedule[dayIndex].blocks.splice(blockIndex, 1);
-    setSchedule(newSchedule);
-  };
-
-  const updateTime = (dayIndex: number, blockIndex: number, field: 'start_time' | 'end_time', value: string) => {
-    const newSchedule = [...schedule];
-    newSchedule[dayIndex].blocks[blockIndex][field] = value;
-    setSchedule(newSchedule);
+  const handleMaxDailyChange = (value: number | null) => {
+    setSettings(prev => ({ ...prev, max_daily_appointments: value }));
+    setHasChanges(true);
   };
 
   const handleSave = async () => {
-    const flatBlocks = [];
-
-    for (const day of schedule) {
-      if (day.enabled) {
-        for (const block of day.blocks) {
-          flatBlocks.push({
-            day_of_week: day.day_of_week,
-            start_time: block.start_time,
-            end_time: block.end_time
-          });
-        }
-      }
-    }
-
+    setSaving(true);
     try {
-      const res = await fetch('http://localhost:8080/api/v1/schedule', {
+      // Save schedule
+      await fetch('http://localhost:8080/api/v1/schedule', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           professional_id: professionalId,
-          blocks: flatBlocks
-        })
+          blocks: blocks,
+        }),
       });
 
-      if (res.ok) {
-        alert("¡Horarios guardados correctamente!");
-      } else {
-        alert("Hubo un error al guardar.");
-      }
+      // Save settings
+      await fetch('http://localhost:8080/api/v1/settings', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          professional_id: professionalId,
+          default_duration_minutes: settings.default_duration_minutes,
+          buffer_minutes: settings.buffer_minutes,
+          time_increment_minutes: settings.time_increment_minutes,
+          min_booking_notice_hours: settings.min_booking_notice_hours,
+          max_daily_appointments: settings.max_daily_appointments,
+        }),
+      });
+
+      setHasChanges(false);
     } catch (error) {
-      console.error(error);
-      alert("Error de conexión.");
+      console.error('Error saving:', error);
+      alert('Error al guardar. Intenta de nuevo.');
+    } finally {
+      setSaving(false);
     }
   };
 
-  if (loading) return <div style={{ padding: 50, color: 'var(--color-text-muted)' }}>Cargando horarios...</div>;
+  if (loading) {
+    return (
+      <div className="agenda-rules-page">
+        <Sidebar />
+        <main className="agenda-rules-main" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <Loader2 size={32} className="animate-spin" style={{ color: 'var(--color-primary)' }} />
+        </main>
+      </div>
+    );
+  }
 
   return (
-    <div style={{ display: 'flex', height: '100vh', backgroundColor: 'var(--color-bg)' }}>
+    <div className="agenda-rules-page">
       <Sidebar />
-      <main style={{ flex: 1, padding: '40px', overflowY: 'auto' }}>
 
-        <header style={{ marginBottom: '32px' }}>
-          <h1 style={{ color: 'var(--color-text-primary)', fontSize: '1.6rem', display: 'flex', alignItems: 'center', gap: '10px', fontWeight: 700 }}>
-            <Clock size={24} /> Configuración de Horarios
+      <main className="agenda-rules-main">
+        <header className="agenda-header">
+          <h1>
+            Reglas de Agenda
           </h1>
-          <p style={{ color: 'var(--color-text-secondary)', marginTop: '6px' }}>
-            Define tus bloques de disponibilidad semanal
-          </p>
+          <p>Configura cómo los pacientes pueden agendar contigo</p>
         </header>
 
-        <div className="schedule-container">
-          {schedule.map((day, dIndex) => (
-            <div key={day.day_of_week} className={`day-card ${!day.enabled ? 'disabled' : ''}`}>
+        <div className="agenda-content">
+          {/* Left Column: Controls */}
+          <div className="agenda-controls">
+            <WeekPainter
+              blocks={blocks}
+              onChange={handleBlocksChange}
+            />
 
-              <div className="day-header">
-                <div className="day-title">
-                  <span>{day.label}</span>
-                </div>
-                <label className="toggle-switch">
-                  <input
-                    type="checkbox"
-                    checked={day.enabled}
-                    onChange={() => toggleDay(dIndex)}
-                  />
-                  <span className="slider"></span>
-                </label>
-              </div>
+            <SchedulingRules
+              settings={settings}
+              onChange={handleSettingsChange}
+            />
 
-              {day.enabled && (
-                <div className="time-blocks-list">
-                  {day.blocks.map((block, bIndex) => (
-                    <div key={bIndex} className="time-block-row">
-                      <input
-                        type="time"
-                        className="time-input"
-                        value={block.start_time}
-                        onChange={(e) => updateTime(dIndex, bIndex, 'start_time', e.target.value)}
-                      />
-                      <span className="time-separator">hasta</span>
-                      <input
-                        type="time"
-                        className="time-input"
-                        value={block.end_time}
-                        onChange={(e) => updateTime(dIndex, bIndex, 'end_time', e.target.value)}
-                      />
+            <WellnessLimits
+              maxDaily={settings.max_daily_appointments}
+              onChange={handleMaxDailyChange}
+            />
+          </div>
 
-                      <button
-                        className="btn-icon"
-                        onClick={() => removeBlock(dIndex, bIndex)}
-                        title="Eliminar intervalo"
-                      >
-                        <Trash2 size={18} />
-                      </button>
-                    </div>
-                  ))}
-
-                  <button className="btn-add-interval" onClick={() => addBlock(dIndex)}>
-                    <Plus size={16} /> Agregar intervalo
-                  </button>
-                </div>
-              )}
-            </div>
-          ))}
+          {/* Right Column: Preview */}
+          <PatientPreview
+            blocks={blocks}
+            settings={settings}
+          />
         </div>
 
-        <button className="save-fab" onClick={handleSave}>
-          <Save size={20} /> Guardar Cambios
+        {/* Save Button */}
+        <button
+          className="save-button"
+          onClick={handleSave}
+          disabled={saving || !hasChanges}
+        >
+          {saving ? (
+            <>
+              <Loader2 size={18} className="animate-spin" />
+              Guardando...
+            </>
+          ) : (
+            <>
+              <Save size={18} />
+              Guardar Cambios
+            </>
+          )}
         </button>
-
       </main>
     </div>
   );
