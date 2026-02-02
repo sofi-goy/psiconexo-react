@@ -1,60 +1,75 @@
 @import 'react-big-calendar/lib/css/react-big-calendar.css';
 
-/* ===== CALENDAR - LIGHT THEME ===== */
+/* ===== CALENDAR - LIGHT THEME (with aggressive overrides) ===== */
 .rbc-calendar {
-  color: var(--color-text-primary);
-  background-color: var(--color-surface);
+  color: var(--color-text-primary, #1F2937) !important;
+  background-color: var(--color-surface, #FFFFFF) !important;
   font-family: inherit;
   height: 100%;
 }
 
+
+
 /* ===== HEADER ===== */
 .rbc-header {
-  border-bottom: 1px solid var(--color-border) !important;
+  border-bottom: 1px solid var(--color-border, #E5E7EB) !important;
   padding: 14px 0;
   font-weight: 600;
   font-size: 0.85rem;
-  color: var(--color-text-secondary);
+  color: var(--color-text-secondary, #6B7280) !important;
   text-transform: capitalize;
-  background-color: var(--color-surface);
+  background-color: var(--color-surface, #FFFFFF) !important;
 }
 
 .rbc-header+.rbc-header {
-  border-left: 1px solid var(--color-border) !important;
+  border-left: 1px solid var(--color-border, #E5E7EB) !important;
 }
 
 /* ===== TIME VIEW ===== */
 .rbc-time-view {
   border: none !important;
   border-radius: 0;
+  background-color: var(--color-surface, #FFFFFF) !important;
+}
+
+.rbc-time-header {
+  background-color: var(--color-surface, #FFFFFF) !important;
+}
+
+.rbc-time-header-content {
+  background-color: var(--color-surface, #FFFFFF) !important;
 }
 
 /* ===== TIME SLOTS ===== */
 .rbc-day-slot .rbc-time-slot {
-  border-top: 1px solid var(--color-border-light) !important;
+  border-top: 1px solid var(--color-border-light, #F3F4F6) !important;
+  background-color: var(--color-surface, #FFFFFF) !important;
 }
 
 .rbc-timeslot-group {
-  border-bottom: 1px solid var(--color-border-light) !important;
+  border-bottom: 1px solid var(--color-border-light, #F3F4F6) !important;
   min-height: 48px;
+  background-color: var(--color-surface, #FFFFFF) !important;
 }
 
 .rbc-time-content {
-  border-top: 1px solid var(--color-border) !important;
-  background-color: var(--color-surface);
+  border-top: 1px solid var(--color-border, #E5E7EB) !important;
+  background-color: var(--color-surface, #FFFFFF) !important;
 }
 
+
+
 .rbc-time-gutter .rbc-timeslot-group {
-  border-bottom: 1px solid var(--color-border-light) !important;
+  border-bottom: 1px solid var(--color-border-light, #F3F4F6) !important;
 }
 
 .rbc-day-slot {
-  border-left: 1px solid var(--color-border) !important;
-  background-color: var(--color-surface);
+  border-left: 1px solid var(--color-border, #E5E7EB) !important;
+  background-color: var(--color-surface, #FFFFFF) !important;
 }
 
 .rbc-day-slot .rbc-events-container {
-  background-color: transparent;
+  background-color: transparent !important;
 }
 
 /* ===== TIME GUTTER ===== */
@@ -70,9 +85,12 @@
   padding: 0 10px;
 }
 
-/* ===== TODAY ===== */
-.rbc-today {
-  background-color: var(--color-primary-light) !important;
+/* ===== TODAY - must come after other backgrounds ===== */
+.rbc-today,
+.rbc-day-slot.rbc-today,
+.rbc-day-slot.rbc-today .rbc-time-slot,
+.rbc-time-header .rbc-today {
+  background-color: var(--color-primary-light, #EEF2FF) !important;
 }
 
 /* ===== APPOINTMENTS ===== */
