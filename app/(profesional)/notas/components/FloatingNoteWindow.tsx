@@ -1,6 +1,6 @@
 "use client";
 import { useState, useRef, useCallback, useEffect } from 'react';
-import { X, GripVertical, FileText, History, Search, Check, Loader2, FileCheck2 } from 'lucide-react';
+import { X, GripVertical, FileText, History, Search, Check, Loader2, FileCheck2, Maximize2, Minimize2 } from 'lucide-react';
 import { NoteToolbar } from './NoteToolbar';
 
 type Tab = 'note' | 'history';
@@ -33,6 +33,11 @@ type Props = {
     onFocus: () => void;
 };
 
+const MIN_WIDTH = 400;
+const MIN_HEIGHT = 350;
+const DEFAULT_WIDTH = 500;
+const DEFAULT_HEIGHT = 600;
+
 export function FloatingNoteWindow({
     note,
     history,
@@ -45,13 +50,19 @@ export function FloatingNoteWindow({
     onFocus,
 }: Props) {
     const [position, setPosition] = useState(initialPosition);
+    const [size, setSize] = useState({ width: DEFAULT_WIDTH, height: DEFAULT_HEIGHT });
     const [isDragging, setIsDragging] = useState(false);
+    const [isResizing, setIsResizing] = useState(false);
+    const [isMaximized, setIsMaximized] = useState(false);
     const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
     const [activeTab, setActiveTab] = useState<Tab>('note');
     const [content, setContent] = useState(note.content);
     const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved'>('idle');
     const [historySearch, setHistorySearch] = useState('');
     const windowRef = useRef<HTMLDivElement>(null);
+
+    // Store previous position/size for restore
+    const prevStateRef = useRef({ position, size });
 
     // Auto-save
     useEffect(() => {
@@ -68,6 +79,7 @@ export function FloatingNoteWindow({
 
     // Drag handlers
     const handleMouseDown = useCallback((e: React.MouseEvent) => {
+        if (isMaximized) return; // Can't drag when maximized
         if (windowRef.current) {
             const rect = windowRef.current.getBoundingClientRect();
             setDragOffset({
@@ -77,7 +89,15 @@ export function FloatingNoteWindow({
             setIsDragging(true);
             onFocus();
         }
-    }, [onFocus]);
+    }, [onFocus, isMaximized]);
+
+    // Resize handlers
+    const handleResizeMouseDown = useCallback((e: React.MouseEvent) => {
+        e.stopPropagation();
+        if (isMaximized) return;
+        setIsResizing(true);
+        onFocus();
+    }, [onFocus, isMaximized]);
 
     useEffect(() => {
         const handleMouseMove = (e: MouseEvent) => {
@@ -87,22 +107,50 @@ export function FloatingNoteWindow({
                     y: e.clientY - dragOffset.y,
                 });
             }
+            if (isResizing && windowRef.current) {
+                const rect = windowRef.current.getBoundingClientRect();
+                const newWidth = Math.max(MIN_WIDTH, e.clientX - rect.left);
+                const newHeight = Math.max(MIN_HEIGHT, e.clientY - rect.top);
+                setSize({ width: newWidth, height: newHeight });
+            }
         };
 
         const handleMouseUp = () => {
             setIsDragging(false);
+            setIsResizing(false);
         };
 
-        if (isDragging) {
+        if (isDragging || isResizing) {
+            // Prevent text selection while dragging/resizing
+            document.body.style.userSelect = 'none';
+            document.body.style.cursor = isDragging ? 'grabbing' : 'nwse-resize';
             document.addEventListener('mousemove', handleMouseMove);
             document.addEventListener('mouseup', handleMouseUp);
         }
 
         return () => {
+            document.body.style.userSelect = '';
+            document.body.style.cursor = '';
             document.removeEventListener('mousemove', handleMouseMove);
             document.removeEventListener('mouseup', handleMouseUp);
         };
-    }, [isDragging, dragOffset]);
+    }, [isDragging, isResizing, dragOffset]);
+
+    // Maximize/Restore toggle
+    const handleToggleMaximize = useCallback((e: React.MouseEvent) => {
+        e.stopPropagation();
+        if (isMaximized) {
+            // Restore
+            setPosition(prevStateRef.current.position);
+            setSize(prevStateRef.current.size);
+            setIsMaximized(false);
+        } else {
+            // Save current state and maximize
+            prevStateRef.current = { position, size };
+            setIsMaximized(true);
+        }
+        onFocus();
+    }, [isMaximized, position, size, onFocus]);
 
     const handleFormat = useCallback((format: string) => {
         console.log('Format:', format);
@@ -123,22 +171,38 @@ export function FloatingNoteWindow({
         }
     };
 
+    // Window styles based on maximized state
+    const windowStyle = isMaximized
+        ? {
+            position: 'absolute' as const,
+            left: 0,
+            top: 0,
+            width: '100%',
+            height: '100%',
+            zIndex,
+            borderRadius: 0,
+        }
+        : {
+            left: position.x,
+            top: position.y,
+            width: size.width,
+            height: size.height,
+            maxHeight: 'none',
+            zIndex,
+        };
+
     return (
         <div
             ref={windowRef}
-            className="floating-note-window"
-            style={{
-                left: position.x,
-                top: position.y,
-                zIndex,
-            }}
+            className={`floating-note-window ${isMaximized ? 'maximized' : ''}`}
+            style={windowStyle}
             onClick={onFocus}
         >
             {/* Header - entire area is draggable */}
             <div
                 className="floating-header"
                 onMouseDown={handleMouseDown}
-                style={{ cursor: isDragging ? 'grabbing' : 'grab' }}
+                style={{ cursor: isMaximized ? 'default' : (isDragging ? 'grabbing' : 'grab') }}
             >
                 <div className="drag-handle" title="Arrastra para mover">
                     <GripVertical size={16} />
@@ -161,6 +225,14 @@ export function FloatingNoteWindow({
                     </button>
                 </div>
 
+                <button
+                    className="floating-maximize"
+                    onClick={handleToggleMaximize}
+                    title={isMaximized ? 'Restaurar' : 'Maximizar'}
+                >
+                    {isMaximized ? <Minimize2 size={14} /> : <Maximize2 size={14} />}
+                </button>
+
                 <button className="floating-close" onClick={(e) => { e.stopPropagation(); onClose(); }}>
                     <X size={16} />
                 </button>
@@ -173,7 +245,7 @@ export function FloatingNoteWindow({
                         <span className="floating-patient">{note.patientName}</span>
                         <span className="floating-date">Sesión del {note.sessionDate}</span>
                         <span className={`floating-status ${note.status}`}>
-                            {note.status === 'draft' ? 'Borrador' : 'Firmada'}
+                            {note.status === 'draft' ? '🟡 Borrador' : '✅ Firmada'}
                         </span>
                     </div>
 
@@ -191,7 +263,7 @@ export function FloatingNoteWindow({
                     <div
                         className="floating-footer"
                         onMouseDown={handleMouseDown}
-                        style={{ cursor: isDragging ? 'grabbing' : 'grab' }}
+                        style={{ cursor: isMaximized ? 'default' : (isDragging ? 'grabbing' : 'grab') }}
                     >
                         <div className={`save-indicator ${saveStatus}`}>
                             {saveStatus === 'saving' && (
@@ -255,6 +327,15 @@ export function FloatingNoteWindow({
                         )}
                     </div>
                 </div>
+            )}
+
+            {/* Resize Handle */}
+            {!isMaximized && (
+                <div
+                    className="resize-handle"
+                    onMouseDown={handleResizeMouseDown}
+                    title="Arrastra para redimensionar"
+                />
             )}
         </div>
     );

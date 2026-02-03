@@ -8,6 +8,7 @@
     height: 100%;
     background: var(--color-bg);
     overflow: hidden;
+    position: relative;
 }
 
 /* === Header === */
@@ -399,6 +400,25 @@
     color: #ef4444;
 }
 
+.floating-maximize {
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: none;
+    border-radius: 6px;
+    color: var(--color-text-muted);
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.floating-maximize:hover {
+    background: rgba(99, 102, 241, 0.15);
+    color: var(--color-primary);
+}
+
 /* Floating Content */
 .floating-content {
     flex: 1;
@@ -591,4 +611,50 @@
 
 .animate-spin {
     animation: spin 1s linear infinite;
+}
+
+/* Resize Handle */
+.resize-handle {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    width: 20px;
+    height: 20px;
+    cursor: nwse-resize;
+    background: linear-gradient(135deg,
+            transparent 50%,
+            var(--color-text-muted) 50%,
+            var(--color-text-muted) 60%,
+            transparent 60%,
+            transparent 70%,
+            var(--color-text-muted) 70%,
+            var(--color-text-muted) 80%,
+            transparent 80%);
+    opacity: 0.4;
+    transition: opacity 0.15s ease;
+    border-bottom-right-radius: 16px;
+}
+
+.resize-handle:hover {
+    opacity: 0.8;
+}
+
+/* Maximized State */
+.floating-note-window.maximized {
+    position: absolute !important;
+    inset: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    max-height: 100% !important;
+    border-radius: 0;
+    box-shadow: none;
+}
+
+.floating-note-window.maximized .floating-header {
+    border-radius: 0;
+}
+
+.floating-note-window.maximized .floating-textarea {
+    min-height: auto;
+    flex: 1;
 }

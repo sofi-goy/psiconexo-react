@@ -1,4 +1,5 @@
 "use client";
+import { useState, useEffect } from 'react';
 import { FileText, AlertTriangle, Pencil } from 'lucide-react';
 
 export type NoteStatus = 'draft' | 'signed';
@@ -43,12 +44,19 @@ function formatSessionDate(date: Date): string {
 }
 
 export function NoteCard({ note, onClick }: Props) {
-    const relativeTime = formatRelativeTime(note.updatedAt);
+    // Use state to avoid hydration mismatch - time is calculated only on client
+    const [relativeTime, setRelativeTime] = useState('');
+    const [showWarning, setShowWarning] = useState(false);
+
     const sessionDateStr = formatSessionDate(note.sessionDate);
 
-    // Check if draft is older than 24 hours
-    const hoursSinceUpdate = (Date.now() - note.updatedAt.getTime()) / (1000 * 60 * 60);
-    const showWarning = note.status === 'draft' && hoursSinceUpdate > 24;
+    useEffect(() => {
+        // Calculate on client only to avoid hydration mismatch
+        setRelativeTime(formatRelativeTime(note.updatedAt));
+
+        const hoursSinceUpdate = (Date.now() - note.updatedAt.getTime()) / (1000 * 60 * 60);
+        setShowWarning(note.status === 'draft' && hoursSinceUpdate > 24);
+    }, [note.updatedAt, note.status]);
 
     return (
         <div className="note-card" onClick={onClick}>
@@ -57,7 +65,9 @@ export function NoteCard({ note, onClick }: Props) {
                 <div className="note-content">
                     <div className="note-patient">
                         <h3>{note.patientName}</h3>
-                        <span className="note-date">{relativeTime}</span>
+                        <span className="note-date" suppressHydrationWarning>
+                            {relativeTime || '...'}
+                        </span>
                     </div>
                     <p className="note-session-info">
                         Sesión del {sessionDateStr} - {note.status === 'draft' ? 'Borrador' : 'Firmada'}
@@ -91,3 +101,4 @@ export function NoteCard({ note, onClick }: Props) {
         </div>
     );
 }
+
