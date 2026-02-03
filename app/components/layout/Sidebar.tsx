@@ -2,11 +2,12 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { CalendarDays, Settings, Link as LinkIcon, User, Sliders, Video, FileText } from 'lucide-react';
+import { CalendarDays, Settings, Link as LinkIcon, User, Sliders, Video, FileText, DollarSign } from 'lucide-react';
 import './sidebar.css';
 
 export function Sidebar() {
   const pathname = usePathname();
+
 
   return (
     <aside className="sidebar">
@@ -37,6 +38,14 @@ export function Sidebar() {
         >
           <FileText size={20} />
           <span>Notas Clínicas</span>
+        </Link>
+
+        <Link
+          href="/finanzas"
+          className={`nav-item ${pathname?.startsWith('/finanzas') ? 'active' : ''}`}
+        >
+          <DollarSign size={20} />
+          <span>Finanzas</span>
         </Link>
 
         <Link
