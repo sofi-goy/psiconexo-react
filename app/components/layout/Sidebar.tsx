@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { CalendarDays, Settings, Link as LinkIcon, User, Video, FileText, DollarSign } from 'lucide-react';
+import { CalendarDays, Settings, Link as LinkIcon, User, Video, FileText, DollarSign, HelpCircle } from 'lucide-react';
 import './sidebar.css';
 
 export function Sidebar() {
@@ -58,6 +58,11 @@ export function Sidebar() {
       </nav>
 
       <div className="sidebar-footer">
+        <span className="help-link">
+          <HelpCircle size={18} />
+          <span>Ayuda</span>
+        </span>
+
         <button className="share-btn-gold">
           <LinkIcon size={16} />
           <span>Copiar Link Público</span>

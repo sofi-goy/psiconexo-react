@@ -54,6 +54,25 @@
   padding-top: 20px;
 }
 
+.help-link {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 16px;
+  margin-bottom: 16px;
+  color: var(--color-text-muted);
+  font-size: 0.9rem;
+  font-weight: 500;
+  border-radius: var(--radius-md);
+  transition: all var(--transition-fast);
+  cursor: default;
+}
+
+.help-link:hover {
+  background-color: var(--color-bg);
+  color: var(--color-text-primary);
+}
+
 .share-btn-gold {
   width: 100%;
   padding: 12px;

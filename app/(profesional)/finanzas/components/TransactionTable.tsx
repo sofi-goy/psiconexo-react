@@ -75,12 +75,14 @@ function PaymentStatusBadge({ status, method }: { status: PaymentStatus; method?
 
 function InvoiceButton({
     fiscalStatus,
+    paymentStatus,
     transactionId,
     patientName,
     onGenerate,
     onShowToast
 }: {
     fiscalStatus: FiscalStatus;
+    paymentStatus: PaymentStatus;
     transactionId: string;
     patientName: string;
     onGenerate: (id: string) => Promise<void>;
@@ -113,11 +115,14 @@ function InvoiceButton({
         );
     }
 
+    const isPaid = paymentStatus === 'paid';
+
     return (
         <button
-            className="invoice-btn"
+            className={`invoice-btn ${!isPaid ? 'disabled' : ''}`}
             onClick={handleClick}
-            disabled={isLoading}
+            disabled={isLoading || !isPaid}
+            title={!isPaid ? 'Solo se puede emitir factura cuando el pago está cobrado' : ''}
         >
             {isLoading ? (
                 <>
@@ -174,6 +179,7 @@ export function TransactionTable({ transactions, onViewReceipt, onGenerateInvoic
                             <td>
                                 <InvoiceButton
                                     fiscalStatus={tx.fiscalStatus}
+                                    paymentStatus={tx.paymentStatus}
                                     transactionId={tx.id}
                                     patientName={tx.patientName}
                                     onGenerate={onGenerateInvoice}

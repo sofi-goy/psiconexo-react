@@ -382,8 +382,9 @@
 }
 
 .invoice-btn:disabled {
-    opacity: 0.8;
+    opacity: 0.5;
     cursor: not-allowed;
+    background: linear-gradient(135deg, #9ca3af 0%, #6b7280 100%);
 }
 
 .invoice-badge {
