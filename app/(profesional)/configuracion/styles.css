@@ -1,0 +1,825 @@
+/* ===== Configuración Styles - Single Page Layout ===== */
+
+/* === Page Layout === */
+.config-page {
+    padding: 32px 40px;
+    max-width: 1400px;
+    margin: 0 auto;
+    overflow-y: auto;
+    height: 100%;
+}
+
+.config-header {
+    margin-bottom: 32px;
+}
+
+.config-header h1 {
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--color-text-primary);
+    margin-bottom: 8px;
+}
+
+.config-header p {
+    font-size: 15px;
+    color: var(--color-text-muted);
+}
+
+/* === Sections Container === */
+.config-sections {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* === Section Accordion === */
+.config-section {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 16px;
+    overflow: hidden;
+}
+
+.section-header {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 24px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    transition: background 0.15s ease;
+}
+
+.section-header:hover {
+    background: var(--color-primary-light);
+}
+
+.section-title {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.section-title svg {
+    color: var(--color-primary);
+}
+
+.section-title h2 {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--color-text-primary);
+}
+
+.section-header .chevron {
+    color: var(--color-text-muted);
+    transition: transform 0.2s ease;
+}
+
+.section-header.expanded .chevron {
+    transform: rotate(180deg);
+}
+
+.section-content {
+    padding: 0 24px 24px;
+    animation: slideDown 0.2s ease;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-8px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* === Tab Content (now embedded) === */
+.tab-content {
+    max-width: none;
+}
+
+.tab-header {
+    display: none;
+    /* Hide individual section headers since accordion has them */
+}
+
+/* === Form Sections - Grid Layout === */
+.form-sections {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    align-items: start;
+}
+
+/* Card size variants */
+.form-section {
+    background: var(--color-bg);
+    border: 1px solid var(--color-border);
+    border-radius: 12px;
+    padding: 20px;
+    height: fit-content;
+    grid-column: span 1;
+}
+
+/* Small cards stay as 1 column */
+.form-section.small {
+    grid-column: span 1;
+}
+
+/* Medium cards span 2 columns */
+.form-section.medium {
+    grid-column: span 2;
+}
+
+/* Full width sections */
+.form-section.full-width,
+.form-sections .schedule-content,
+.form-sections .form-actions {
+    grid-column: 1 / -1;
+}
+
+/* Make form actions always at the bottom */
+.form-sections .form-actions {
+    justify-content: flex-start;
+}
+
+.form-section h3 {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--color-text-primary);
+    margin-bottom: 16px;
+}
+
+.section-description {
+    font-size: 13px;
+    color: var(--color-text-muted);
+    margin-bottom: 16px;
+}
+
+/* === Form Grid === */
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+}
+
+.form-grid .full-width {
+    grid-column: 1 / -1;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.form-group label {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--color-text-secondary);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.form-group label svg {
+    color: var(--color-text-muted);
+}
+
+.form-group .optional {
+    font-weight: 400;
+    color: var(--color-text-muted);
+}
+
+.form-group input,
+.form-group textarea,
+.form-group select {
+    padding: 10px 12px;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    font-size: 14px;
+    color: var(--color-text-primary);
+    transition: all 0.15s ease;
+}
+
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px var(--color-primary-light);
+}
+
+.form-group textarea {
+    resize: vertical;
+    min-height: 70px;
+}
+
+.form-hint {
+    font-size: 12px;
+    color: var(--color-text-muted);
+}
+
+.char-count {
+    font-size: 12px;
+    color: var(--color-text-muted);
+    text-align: right;
+}
+
+/* === Photo Upload === */
+.photo-upload {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.photo-preview {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    overflow: hidden;
+    background: var(--color-surface);
+    border: 2px dashed var(--color-border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.photo-preview img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.photo-placeholder {
+    color: var(--color-text-muted);
+}
+
+.photo-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.upload-btn {
+    padding: 8px 16px;
+    background: var(--color-primary);
+    color: white;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.upload-btn:hover {
+    background: var(--color-primary-dark);
+}
+
+.photo-hint {
+    font-size: 11px;
+    color: var(--color-text-muted);
+}
+
+/* === Slug Input === */
+.slug-input-container {
+    display: flex;
+    align-items: center;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.slug-prefix {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 12px;
+    background: var(--color-bg);
+    border-right: 1px solid var(--color-border);
+    font-size: 13px;
+    color: var(--color-text-muted);
+    white-space: nowrap;
+}
+
+.slug-input {
+    flex: 1;
+    padding: 10px 12px;
+    background: transparent;
+    border: none;
+    font-size: 14px;
+    color: var(--color-text-primary);
+}
+
+.slug-input:focus {
+    outline: none;
+}
+
+.slug-status {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 8px 12px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.slug-status.checking {
+    color: var(--color-text-muted);
+}
+
+.slug-status.available {
+    color: #22c55e;
+}
+
+.slug-status.taken {
+    color: #ef4444;
+}
+
+/* === Input with Prefix/Suffix === */
+.input-with-prefix,
+.input-with-suffix {
+    display: flex;
+    align-items: center;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.input-with-prefix .prefix,
+.input-with-suffix .suffix {
+    padding: 10px 12px;
+    background: var(--color-bg);
+    font-size: 14px;
+    color: var(--color-text-muted);
+}
+
+.input-with-prefix .prefix {
+    border-right: 1px solid var(--color-border);
+}
+
+.input-with-suffix .suffix {
+    border-left: 1px solid var(--color-border);
+}
+
+.input-with-prefix input,
+.input-with-suffix input {
+    flex: 1;
+    padding: 10px 12px;
+    background: transparent;
+    border: none;
+    font-size: 14px;
+    color: var(--color-text-primary);
+}
+
+.input-with-prefix input:focus,
+.input-with-suffix input:focus {
+    outline: none;
+}
+
+/* === Toggle Option === */
+.toggle-option {
+    margin-top: 14px;
+    padding-top: 14px;
+    border-top: 1px solid var(--color-border);
+}
+
+.toggle-label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+}
+
+.toggle-label input {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--color-primary);
+}
+
+.toggle-text {
+    font-size: 13px;
+    color: var(--color-text-primary);
+}
+
+/* === Mercado Pago === */
+.mp-connect-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 20px;
+    background: linear-gradient(135deg, #009ee3 0%, #00b1ea 100%);
+    border: none;
+    border-radius: 8px;
+    color: white;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.mp-connect-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 16px rgba(0, 158, 227, 0.3);
+}
+
+.mp-connected {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 16px;
+    background: rgba(34, 197, 94, 0.1);
+    border: 1px solid rgba(34, 197, 94, 0.3);
+    border-radius: 8px;
+    color: #22c55e;
+    font-size: 14px;
+}
+
+.mp-connected strong {
+    color: var(--color-text-primary);
+}
+
+.mp-disconnect {
+    margin-left: auto;
+    background: none;
+    border: none;
+    color: var(--color-text-muted);
+    font-size: 12px;
+    cursor: pointer;
+}
+
+.mp-disconnect:hover {
+    color: #ef4444;
+}
+
+.info-box {
+    display: flex;
+    gap: 10px;
+    padding: 12px 14px;
+    background: rgba(59, 130, 246, 0.08);
+    border: 1px solid rgba(59, 130, 246, 0.2);
+    border-radius: 8px;
+    margin-top: 14px;
+}
+
+.info-box svg {
+    flex-shrink: 0;
+    color: #3b82f6;
+    margin-top: 2px;
+}
+
+.info-box p {
+    font-size: 12px;
+    color: var(--color-text-secondary);
+    line-height: 1.5;
+}
+
+/* === AFIP Uploads === */
+.afip-uploads {
+    display: flex;
+    gap: 12px;
+}
+
+.upload-box {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 10px;
+}
+
+.upload-status {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--color-bg);
+    border: 2px dashed var(--color-border);
+    border-radius: 8px;
+    color: var(--color-text-muted);
+    flex-shrink: 0;
+}
+
+.upload-status.success {
+    background: rgba(34, 197, 94, 0.1);
+    border: 2px solid #22c55e;
+    color: #22c55e;
+}
+
+.upload-info h4 {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--color-text-primary);
+    margin-bottom: 2px;
+}
+
+.upload-info p {
+    font-size: 11px;
+    color: var(--color-text-muted);
+}
+
+.upload-action {
+    margin-left: auto;
+    padding: 6px 12px;
+    background: var(--color-primary-light);
+    color: var(--color-primary);
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.upload-action:hover {
+    background: var(--color-primary);
+    color: white;
+}
+
+.help-link {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 10px;
+    font-size: 12px;
+    color: var(--color-primary);
+}
+
+.help-link a {
+    color: inherit;
+    text-decoration: underline;
+}
+
+/* === Security Tab === */
+.disabled-input {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+.email-display {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.verified-badge {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 8px;
+    background: rgba(34, 197, 94, 0.1);
+    color: #22c55e;
+    font-size: 11px;
+    font-weight: 500;
+    border-radius: 20px;
+}
+
+.password-form {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.password-input-container {
+    position: relative;
+}
+
+.password-input-container input {
+    width: 100%;
+    padding-right: 40px;
+}
+
+.password-toggle {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: var(--color-text-muted);
+    cursor: pointer;
+    padding: 4px;
+}
+
+.password-toggle:hover {
+    color: var(--color-text-secondary);
+}
+
+.change-password-btn {
+    padding: 10px 20px;
+    background: var(--color-primary);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    width: fit-content;
+}
+
+.change-password-btn:hover:not(:disabled) {
+    background: var(--color-primary-dark);
+}
+
+.change-password-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.success-message {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 14px;
+    background: rgba(34, 197, 94, 0.1);
+    border: 1px solid rgba(34, 197, 94, 0.3);
+    border-radius: 8px;
+    color: #22c55e;
+    font-size: 13px;
+    font-weight: 500;
+    margin-bottom: 14px;
+}
+
+/* === Notifications === */
+.notification-options {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.notification-option {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 14px;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.notification-option:hover {
+    border-color: var(--color-primary);
+}
+
+.notification-option input {
+    width: 16px;
+    height: 16px;
+    margin-top: 2px;
+    accent-color: var(--color-primary);
+}
+
+.notification-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.notification-title {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--color-text-primary);
+}
+
+.notification-desc {
+    font-size: 12px;
+    color: var(--color-text-muted);
+}
+
+/* === Form Actions === */
+.form-actions {
+    display: flex;
+    padding-top: 8px;
+}
+
+.save-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 24px;
+    background: linear-gradient(135deg, var(--color-primary) 0%, #4f46e5 100%);
+    border: none;
+    border-radius: 8px;
+    color: white;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    box-shadow: 0 2px 8px rgba(99, 102, 241, 0.3);
+}
+
+.save-btn:hover:not(:disabled) {
+    background: linear-gradient(135deg, #4f46e5 0%, #4338ca 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 16px rgba(99, 102, 241, 0.4);
+}
+
+.save-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* === Schedule Tab Specific === */
+.schedule-tab .schedule-content {
+    display: grid;
+    grid-template-columns: 1fr 360px;
+    gap: 20px;
+}
+
+.schedule-tab .schedule-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+/* === Responsive === */
+@media (max-width: 1200px) {
+    .form-sections {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .form-section.medium {
+        grid-column: span 2;
+    }
+
+    .form-section.small {
+        grid-column: span 1;
+    }
+
+    .schedule-tab .schedule-content {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 900px) {
+    .form-sections {
+        grid-template-columns: 1fr;
+    }
+
+    .form-section,
+    .form-section.small,
+    .form-section.medium,
+    .form-section.full-width {
+        grid-column: span 1;
+    }
+
+    .afip-uploads {
+        flex-direction: column;
+    }
+}
+
+@media (max-width: 768px) {
+    .config-page {
+        padding: 20px;
+    }
+
+    .config-header h1 {
+        font-size: 26px;
+    }
+
+    .section-header {
+        padding: 16px 20px;
+    }
+
+    .section-content {
+        padding: 0 20px 20px;
+    }
+
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .photo-upload {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}
+
+/* === Animate spin === */
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.animate-spin {
+    animation: spin 1s linear infinite;
+}

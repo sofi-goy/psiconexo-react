@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { CalendarDays, Settings, Link as LinkIcon, User, Sliders, Video, FileText, DollarSign } from 'lucide-react';
+import { CalendarDays, Settings, Link as LinkIcon, User, Video, FileText, DollarSign } from 'lucide-react';
 import './sidebar.css';
 
 export function Sidebar() {
@@ -49,16 +49,8 @@ export function Sidebar() {
         </Link>
 
         <Link
-          href="/reglas-agenda"
-          className={`nav-item ${pathname === '/reglas-agenda' ? 'active' : ''}`}
-        >
-          <Sliders size={20} />
-          <span>Reglas de Agenda</span>
-        </Link>
-
-        <Link
           href="/configuracion"
-          className={`nav-item ${pathname === '/configuracion' ? 'active' : ''}`}
+          className={`nav-item ${pathname?.startsWith('/configuracion') ? 'active' : ''}`}
         >
           <Settings size={20} />
           <span>Configuración</span>
