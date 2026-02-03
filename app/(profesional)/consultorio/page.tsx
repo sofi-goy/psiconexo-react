@@ -1,5 +1,5 @@
 "use client";
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import { AirlockView } from './components/AirlockView';
@@ -29,9 +29,32 @@ const MOCK_PAST_SESSIONS = [
     { id: 3, date: 'Hace 21 días - 10 Ene 2026', summary: 'Evaluación inicial. Diagnóstico: TAG leve. Plan de tratamiento establecido.' },
 ];
 
+// Helper to stop all active media tracks
+function stopAllMediaTracks() {
+    navigator.mediaDevices.getUserMedia({ audio: true, video: true })
+        .then(() => { }) // Just to get permissions list
+        .catch(() => { });
+
+    // Get all video elements and stop their streams
+    document.querySelectorAll('video').forEach(video => {
+        const stream = video.srcObject as MediaStream | null;
+        if (stream) {
+            stream.getTracks().forEach(track => track.stop());
+            video.srcObject = null;
+        }
+    });
+}
+
 export default function ConsultorioPage() {
     const [phase, setPhase] = useState<Phase>('airlock');
     const [sessionNote, setSessionNote] = useState('');
+
+    // Global cleanup when leaving the page
+    useEffect(() => {
+        return () => {
+            stopAllMediaTracks();
+        };
+    }, []);
 
     const handleJoin = useCallback(() => {
         setPhase('active');

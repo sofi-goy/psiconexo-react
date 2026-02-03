@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { Mic, MicOff, Video, VideoOff, PhoneOff, User } from 'lucide-react';
 
 type Props = {
@@ -8,19 +8,41 @@ type Props = {
 
 export function VideoPanel({ onEndCall }: Props) {
     const selfVideoRef = useRef<HTMLVideoElement>(null);
+    const streamRef = useRef<MediaStream | null>(null);
     const [isMuted, setIsMuted] = useState(false);
     const [isVideoOff, setIsVideoOff] = useState(false);
     const [controlsVisible, setControlsVisible] = useState(true);
     const hideTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+    const stopAllTracks = useCallback(() => {
+        if (streamRef.current) {
+            streamRef.current.getTracks().forEach(track => {
+                track.stop();
+            });
+            streamRef.current = null;
+        }
+        if (selfVideoRef.current) {
+            selfVideoRef.current.srcObject = null;
+        }
+    }, []);
+
     // Initialize self camera
     useEffect(() => {
+        let isMounted = true;
+
         async function initCamera() {
             try {
                 const stream = await navigator.mediaDevices.getUserMedia({
                     video: true,
                     audio: true,
                 });
+
+                if (!isMounted) {
+                    stream.getTracks().forEach(track => track.stop());
+                    return;
+                }
+
+                streamRef.current = stream;
                 if (selfVideoRef.current) {
                     selfVideoRef.current.srcObject = stream;
                 }
@@ -31,12 +53,10 @@ export function VideoPanel({ onEndCall }: Props) {
         initCamera();
 
         return () => {
-            if (selfVideoRef.current?.srcObject) {
-                const stream = selfVideoRef.current.srcObject as MediaStream;
-                stream.getTracks().forEach(track => track.stop());
-            }
+            isMounted = false;
+            stopAllTracks();
         };
-    }, []);
+    }, [stopAllTracks]);
 
     // Auto-hide controls
     const handleMouseMove = () => {
@@ -51,9 +71,8 @@ export function VideoPanel({ onEndCall }: Props) {
 
     const toggleMute = () => {
         setIsMuted(!isMuted);
-        if (selfVideoRef.current?.srcObject) {
-            const stream = selfVideoRef.current.srcObject as MediaStream;
-            stream.getAudioTracks().forEach(track => {
+        if (streamRef.current) {
+            streamRef.current.getAudioTracks().forEach(track => {
                 track.enabled = isMuted;
             });
         }
@@ -61,13 +80,17 @@ export function VideoPanel({ onEndCall }: Props) {
 
     const toggleVideo = () => {
         setIsVideoOff(!isVideoOff);
-        if (selfVideoRef.current?.srcObject) {
-            const stream = selfVideoRef.current.srcObject as MediaStream;
-            stream.getVideoTracks().forEach(track => {
+        if (streamRef.current) {
+            streamRef.current.getVideoTracks().forEach(track => {
                 track.enabled = isVideoOff;
             });
         }
     };
+
+    const handleEndCall = useCallback(() => {
+        stopAllTracks();
+        onEndCall();
+    }, [stopAllTracks, onEndCall]);
 
     return (
         <div className="video-panel" onMouseMove={handleMouseMove}>
@@ -113,7 +136,7 @@ export function VideoPanel({ onEndCall }: Props) {
 
                 <button
                     className="control-btn end-call"
-                    onClick={onEndCall}
+                    onClick={handleEndCall}
                     title="Finalizar llamada"
                 >
                     <PhoneOff size={22} />
