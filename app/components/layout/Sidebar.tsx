@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { CalendarDays, Settings, Link as LinkIcon, User, Sliders, Video } from 'lucide-react';
+import { CalendarDays, Settings, Link as LinkIcon, User, Sliders, Video, FileText } from 'lucide-react';
 import './sidebar.css';
 
 export function Sidebar() {
@@ -29,6 +29,14 @@ export function Sidebar() {
         >
           <Video size={20} />
           <span>Consultorio Digital</span>
+        </Link>
+
+        <Link
+          href="/notas"
+          className={`nav-item ${pathname?.startsWith('/notas') ? 'active' : ''}`}
+        >
+          <FileText size={20} />
+          <span>Notas Clínicas</span>
         </Link>
 
         <Link
